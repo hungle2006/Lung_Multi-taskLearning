@@ -87,10 +87,16 @@ PneumoAI is an end-to-end clinical decision-support system that analyzes digital
 flowchart TB
 
 %% =====================================================
-%% INPUT PIPELINE
+%% GLOBAL STYLE
 %% =====================================================
 
-A[🎵 Audio Input<br/>wav · mp3 · flac · ogg · m4a · webm]
+linkStyle default stroke:#94a3b8,stroke-width:2.5px,fill:none
+
+%% =====================================================
+%% INPUT STAGE
+%% =====================================================
+
+A([🎵 Audio Input<br/><br/>wav · mp3 · flac · ogg · m4a · webm])
 
 A --> B
 
@@ -103,47 +109,46 @@ Sliding Window Segmentation<br/>
 
 B --> C
 
-C[📊 Log-Mel Spectrogram<br/>N × 1 × 128 × 188]
+C[📊 Log-Mel Spectrogram<br/><br/>N × 1 × 128 × 188]
 
 %% =====================================================
 %% MODEL
 %% =====================================================
 
-C --> D
+C ==> D
 
-subgraph MODEL["🧠 DualBranchModel (CNN)"]
-
+subgraph MODEL["🧠 DualBranchModel Architecture"]
 direction TB
 
-D[SharedStem<br/><br/>
+D[SharedStem Backbone<br/><br/>
 ResNet18<br/>
 conv1 → layer2]
 
-D --> E1
-D --> E2
+D ==> E1
+D ==> E2
 
 subgraph BRANCHES["Feature Extraction Branches"]
 direction LR
 
 E1[🫁 EventBranch<br/><br/>
 layer3 + layer4<br/>
-Feature Pyramid Network]
++ Feature Pyramid Network]
 
 E2[🩺 DiseaseBranch<br/><br/>
 layer3 + layer4<br/>
-Feature Pyramid Network]
++ Feature Pyramid Network]
 
 end
 
-E1 --> F
-E2 --> F
+E1 ==> F
+E2 ==> F
 
-F[🔀 CrossAttentionFusion<br/><br/>
+F{{🔀 CrossAttentionFusion<br/><br/>
 Bidirectional Multi-Head Attention<br/>
-4 Attention Heads]
+4 Attention Heads}}
 
-F --> G1
-F --> G2
+F ==> G1
+F ==> G2
 
 G1[📍 EventHead<br/><br/>
 LayerNorm + MLP<br/>
@@ -152,7 +157,7 @@ LayerNorm + MLP<br/>
 G2[🧬 PatientAttention<br/><br/>
 Respiratory Cycle Aggregation]
 
-G2 --> H
+G2 ==> H
 
 H[🏥 DiseaseHead<br/><br/>
 LayerNorm + MLP<br/>
@@ -161,37 +166,37 @@ LayerNorm + MLP<br/>
 end
 
 %% =====================================================
-%% PREDICTION
+%% PREDICTIONS
 %% =====================================================
 
 G1 --> I
 H --> J
 
-I[📈 Event Probabilities<br/>Per Respiratory Cycle]
+I[📈 Event Probabilities<br/><br/>Per Respiratory Cycle]
 
-J[📈 Disease Probabilities<br/>Patient-Level Prediction]
+J[📈 Disease Probabilities<br/><br/>Patient-Level Prediction]
 
 %% =====================================================
 %% XAI
 %% =====================================================
 
-I --> K
-J --> K
+I ==> K
+J ==> K
 
-K[🔥 Dual-Target Grad-CAM<br/><br/>
+K[[🔥 Dual-Target Grad-CAM<br/><br/>
 cam_event_pred<br/>
 cam_disease_pred<br/>
 cam_disease_alt<br/>
-cam_diff]
+cam_diff]]
 
 %% =====================================================
-%% TOP-K SELECTION
+%% TOP-K
 %% =====================================================
 
-K --> L
+K ==> L
 
 L[🎯 Top-3 Cycle Selector<br/><br/>
-Priority Strategy:<br/>
+Priority Strategy<br/><br/>
 • Abnormal Events<br/>
 • Highest Disease CAM Peak]
 
@@ -199,23 +204,23 @@ L --> M1
 L --> M2
 L --> M3
 
-M1[Cycle #1]
-M2[Cycle #2]
-M3[Cycle #3]
+M1([Cycle #1])
+M2([Cycle #2])
+M3([Cycle #3])
 
 %% =====================================================
 %% QLORA
 %% =====================================================
 
-M1 --> N
-M2 --> N
-M3 --> N
+M1 ==> N
+M2 ==> N
+M3 ==> N
 
-N[🤖 QLoRA Clinical Reasoning<br/><br/>
+N{{🤖 QLoRA Clinical Reasoning<br/><br/>
 Qwen2.5-7B-Instruct<br/>
-+ LoRA Adapter]
++ LoRA Adapter}}
 
-N --> O
+N ==> O
 
 O[🧾 6-Step Diagnostic Analysis<br/><br/>
 1. Event Reliability<br/>
@@ -226,48 +231,43 @@ O[🧾 6-Step Diagnostic Analysis<br/><br/>
 6. Final Diagnostic Conclusion]
 
 %% =====================================================
-%% FINAL OUTPUT
+%% OUTPUT
 %% =====================================================
 
-O --> P
+O ==> P
 
 P[🗳 Majority Vote Aggregation<br/><br/>
-3 Cycles → 1 Final Prediction]
+3 Cycles → 1 Final Decision]
 
-P --> Q
+P ==> Q
 
-Q[🌐 JSON Response<br/>FastAPI Backend]
+Q[🌐 FastAPI JSON Response]
 
-Q --> R
-
-R[🖥 Interactive Frontend<br/><br/>
-React + Three.js<br/>
-3D Lung Visualization]
+Q ==> R([🖥 Interactive Frontend<br/><br/>React + Three.js<br/>3D Lung Visualization])
 
 %% =====================================================
-%% STYLING
+%% COLORS
 %% =====================================================
 
-classDef input fill:#0f172a,color:#ffffff,stroke:#1e293b,stroke-width:2px;
-classDef preprocess fill:#115e59,color:#ffffff,stroke:#134e4a,stroke-width:2px;
-classDef feature fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:2px;
+classDef input fill:#0f172a,color:#ffffff,stroke:#334155,stroke-width:2px;
+classDef preprocess fill:#0f766e,color:#ffffff,stroke:#134e4a,stroke-width:2px;
+classDef feature fill:#2563eb,color:#ffffff,stroke:#1e3a8a,stroke-width:2px;
 classDef attention fill:#7c3aed,color:#ffffff,stroke:#581c87,stroke-width:2px;
-classDef head fill:#ea580c,color:#ffffff,stroke:#7c2d12,stroke-width:2px;
-classDef output fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:2px;
-classDef explain fill:#be123c,color:#ffffff,stroke:#881337,stroke-width:2px;
+classDef head fill:#ea580c,color:#ffffff,stroke:#9a3412,stroke-width:2px;
+classDef explain fill:#e11d48,color:#ffffff,stroke:#881337,stroke-width:2px;
 classDef llm fill:#111827,color:#ffffff,stroke:#000000,stroke-width:2px;
+classDef output fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:2px;
 classDef neutral fill:#475569,color:#ffffff,stroke:#334155,stroke-width:2px;
 
 class A input;
 class B preprocess;
-class C feature;
-class D,E1,E2 feature;
+class C,D,E1,E2 feature;
 class F,G2 attention;
 class G1,H head;
-class I,J,P,Q,R output;
 class K,L explain;
-class M1,M2,M3 neutral;
 class N,O llm;
+class I,J,P,Q,R output;
+class M1,M2,M3 neutral;
 ```
 
 ---
