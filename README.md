@@ -1,406 +1,440 @@
+# PneumoAI — Lung Sound Diagnostic System
+
 <div align="center">
 
-<br>
+![PneumoAI Banner](https://img.shields.io/badge/PneumoAI-v5.2.0-7ed8ff?style=for-the-badge&logo=data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjQgMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEyIDJMNCA2djZjMCA1LjI1IDMuNzUgMTAuMTUgOCAxMS41QzE2LjI1IDIyLjE1IDIwIDE3LjI1IDIwIDEyVjZMMTIgMnoiIGZpbGw9IndoaXRlIi8+PC9zdmc+)
+[![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://python.org)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white)](https://pytorch.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.110%2B-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 
-```
-██████╗ ███╗   ██╗███████╗██╗   ██╗███╗   ███╗ ██████╗      █████╗ ██╗
-██╔══██╗████╗  ██║██╔════╝██║   ██║████╗ ████║██╔═══██╗    ██╔══██╗██║
-██████╔╝██╔██╗ ██║█████╗  ██║   ██║██╔████╔██║██║   ██║    ███████║██║
-██╔═══╝ ██║╚██╗██║██╔══╝  ██║   ██║██║╚██╔╝██║██║   ██║    ██╔══██║██║
-██║     ██║ ╚████║███████╗╚██████╔╝██║ ╚═╝ ██║╚██████╔╝    ██║  ██║██║
-╚═╝     ╚═╝  ╚═══╝╚══════╝ ╚═════╝ ╚═╝     ╚═╝ ╚═════╝     ╚═╝  ╚═╝╚═╝
-```
+**AI-powered respiratory sound analysis combining a dual-branch multi-task CNN with a QLoRA-finetuned large language model for clinical-grade lung disease classification.**
 
-### Lung Sound Diagnostic System
-
-*Dual-branch multi-task CNN × QLoRA-finetuned LLM for clinical-grade respiratory analysis*
-
-<br>
-
-![Version](https://img.shields.io/badge/version-5.2.0-0ea5e9?style=flat-square)
-![Python](https://img.shields.io/badge/python-3.9%2B-3b82f6?style=flat-square&logo=python&logoColor=white)
-![PyTorch](https://img.shields.io/badge/pytorch-2.x-ef4444?style=flat-square&logo=pytorch&logoColor=white)
-![FastAPI](https://img.shields.io/badge/fastapi-0.110%2B-10b981?style=flat-square&logo=fastapi&logoColor=white)
-![CUDA](https://img.shields.io/badge/cuda-11.8%2B-76b900?style=flat-square&logo=nvidia&logoColor=white)
-![License](https://img.shields.io/badge/license-MIT-8b5cf6?style=flat-square)
-
-<br>
-
-[**Overview**](#-overview) · [**Architecture**](#-architecture) · [**Quick Start**](#-quick-start) · [**API**](#-api-reference) · [**Training**](#-training-guide) · [**Changelog**](#-changelog)
-
-<br>
+[Demo](#demo) · [Quick Start](#quick-start) · [Architecture](#architecture) · [API Reference](#api-reference) · [Weights & Checkpoints](#weights--checkpoints)
 
 </div>
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
-| # | Section |
-|---|---------|
-| 1 | [Overview](#-overview) |
-| 2 | [System Architecture](#-system-architecture) |
-| 3 | [Data Pipeline](#-data-pipeline) |
-| 4 | [DualBranch Model](#-dualbranch-multi-task-model) |
-| 5 | [QLoRA Fine-Tuned LLM](#-qlora-fine-tuned-llm) |
-| 6 | [Dual-Target Grad-CAM](#-dual-target-grad-cam) |
-| 7 | [Inference Flow](#-inference-flow-v52) |
-| 8 | [Weights & Checkpoints](#-weights--checkpoints) |
-| 9 | [Installation](#-installation) |
-| 10 | [Quick Start](#-quick-start) |
-| 11 | [API Reference](#-api-reference) |
-| 12 | [Project Structure](#-project-structure) |
-| 13 | [Configuration](#-configuration-reference) |
-| 14 | [Training Guide](#-training-guide) |
-| 15 | [Evaluation & Metrics](#-evaluation--metrics) |
-| 16 | [Deployment](#-deployment) |
-| 17 | [Troubleshooting](#-troubleshooting) |
-| 18 | [Changelog](#-changelog) |
-| 19 | [Citation](#-citation) |
-| 20 | [License](#-license) |
+1. [Project Overview](#1-project-overview)
+2. [System Architecture](#2-system-architecture)
+3. [Data Pipeline](#3-data-pipeline)
+4. [DualBranch Multi-Task Model](#4-dualbranch-multi-task-model)
+5. [QLoRA Fine-Tuned LLM](#5-qlora-fine-tuned-llm)
+6. [Explainability — Dual-Target Grad-CAM](#6-explainability--dual-target-grad-cam)
+7. [Inference Flow (v5.2 Sequential Per-Cycle)](#7-inference-flow-v52-sequential-per-cycle)
+8. [Weights & Checkpoints](#8-weights--checkpoints)
+9. [Installation](#9-installation)
+10. [Quick Start](#10-quick-start)
+11. [API Reference](#11-api-reference)
+12. [Project Structure](#12-project-structure)
+13. [Configuration Reference](#13-configuration-reference)
+14. [Training Guide](#14-training-guide)
+15. [Evaluation & Metrics](#15-evaluation--metrics)
+16. [Deployment](#16-deployment)
+17. [Troubleshooting](#17-troubleshooting)
+18. [Changelog](#18-changelog)
+19. [Citation](#19-citation)
+20. [License](#20-license)
 
 ---
 
-## 🫁 Overview
+## 1. Project Overview
 
-PneumoAI is an end-to-end clinical decision-support system that analyzes digital stethoscope recordings to detect and classify respiratory diseases. Two AI components operate in tandem:
+PneumoAI is an end-to-end clinical decision-support system that analyzes digital stethoscope recordings to detect and classify respiratory diseases. The system is composed of two major AI components operating in tandem:
 
 | Component | Role | Architecture |
-|-----------|------|-------------|
-| **DualBranchModel** | Acoustic feature extraction & multi-task classification | ResNet18 + FPN + CrossAttentionFusion + PatientAttention |
+|---|---|---|
+| **DualBranchModel** | Acoustic feature extraction & classification | ResNet18 + FPN + CrossAttentionFusion + PatientAttention |
 | **PneumoGPT** | Structured clinical reasoning & report generation | QLoRA fine-tuned Qwen2.5-7B-Instruct |
 
-<br>
+### Supported Classifications
 
-### Event Classifications *(per respiratory cycle)*
+**Event-level (per respiratory cycle):**
 
-```
-  ●  Normal    No adventitious sounds detected
-  ◐  Crackle   Discontinuous, explosive sounds — fine or coarse
-  ◑  Wheeze    Continuous, musical high-pitched sounds
-  ●  Both      Co-occurrence of crackle and wheeze (rhonchi)
-```
+| Label | Description |
+|---|---|
+| `Normal` | No adventitious sounds detected |
+| `Crackle` | Discontinuous, explosive sounds (fine or coarse) |
+| `Wheeze` | Continuous, musical high-pitched sounds |
+| `Both` | Co-occurrence of crackle and wheeze (rhonchi) |
 
-### Disease Classifications *(patient-level)*
+**Patient-level disease:**
 
-```
-  ○  Healthy       Normal lung sounds, no pathology             ── LOW severity
-  ◔  Infectious    Respiratory infection — pneumonia, bronchitis ── MEDIUM severity
-  ●  Obstructive   Obstructive lung disease — COPD, asthma      ── HIGH severity
-```
-
-<br>
+| Label | Clinical Meaning | Severity |
+|---|---|---|
+| `Healthy` | Normal lung sounds, no pathology | Low |
+| `Infectious` | Respiratory infection (pneumonia, bronchitis, etc.) | Medium |
+| `Obstructive` | Obstructive lung disease (COPD, asthma, etc.) | High |
 
 ### Key Capabilities
 
-- **Multi-format audio** — WAV / MP3 / FLAC / OGG / M4A / WEBM, up to 100 MB
-- **Cycle segmentation** — overlapping 6-second windows (50% hop) via sliding window
-- **Dual-branch inference** — event classification per cycle + patient-level disease aggregation
-- **Top-3 cycle selection** — disease-branch Grad-CAM peak activation priority
-- **Sequential QLoRA reasoning** — independent 6-step analysis per cycle → majority-vote verdict
-- **Real-time REST API** — with Three.js interactive 3D lung frontend
+- Processes raw audio files (WAV / MP3 / FLAC / OGG / M4A / WEBM) up to 100 MB
+- Segments recordings into overlapping 6-second respiratory cycles
+- Runs dual-branch inference: event classification per cycle + patient-level disease aggregation
+- Selects Top-3 most diagnostically significant cycles using disease-branch Grad-CAM peak activation
+- Feeds each Top-3 cycle independently into QLoRA for structured 6-step clinical reasoning
+- Aggregates per-cycle LLM outputs via majority vote into a final clinical summary
+- Serves a real-time REST API with a Three.js interactive frontend
 
 ---
 
+## 2. System Architecture
+
+```mermaid
 flowchart TB
 
-%% =====================================================
-%% STYLE
-%% =====================================================
+%% =========================
+%% INPUT PIPELINE
+%% =========================
 
-classDef stage fill:#0F172A,color:#fff,stroke:#38BDF8,stroke-width:3px
-classDef model fill:#111827,color:#fff,stroke:#A78BFA,stroke-width:2px
-classDef xai fill:#1F2937,color:#fff,stroke:#FB7185,stroke-width:2px
-classDef llm fill:#172554,color:#fff,stroke:#60A5FA,stroke-width:2px
-classDef output fill:#052E16,color:#fff,stroke:#4ADE80,stroke-width:2px
+A[🎵 Audio Input<br/>.wav · .mp3 · .flac · .ogg · .m4a · .webm]
 
-%% =====================================================
-%% INPUT
-%% =====================================================
+A --> B
 
-A["🎧 AUDIO INPUT<br/><br/>
-wav · mp3 · flac · ogg · m4a · webm"]
-
-B["⚙️ PREPROCESSING<br/><br/>
-• Butterworth Bandpass (100–2000 Hz)<br/>
+B[🧹 Audio Pipeline<br/><br/>
+• Butterworth Bandpass Filter<br/>
+• 100–2000 Hz<br/>
 • Z-score Normalization<br/>
-• Sliding Window (6 s / 3 s)<br/>
-• Log-Mel Spectrogram"]
+• Sliding Window Segmentation<br/>
+• 6s window / 3s hop]
 
-C["📦 OUTPUT FEATURES<br/><br/>
-N × [1,1,128,188]"]
+B --> C
 
-A --> B --> C
+C[📊 Log-Mel Spectrogram<br/>N × 1 × 128 × 188]
 
-class A,B,C stage
+%% =========================
+%% MAIN MODEL
+%% =========================
 
-%% =====================================================
-%% CNN
-%% =====================================================
+C --> D
 
-subgraph CNN["🧠 DUALBRANCHMODEL"]
-direction LR
+subgraph MODEL["🧠 DualBranchModel (CNN)"]
 
-%% Shared Stem
-S["SharedStem<br/><br/>
-ResNet18<br/>
-conv1 → layer2"]
+D[SharedStem<br/>ResNet18 conv1 → layer2]
 
-%% Event Branch
-E["🔊 EVENT BRANCH<br/><br/>
-layer3 + layer4 + FPN<br/>
-Embedding: emb_e [256]<br/>
-LayerNorm + MLP<br/>
-→ 4 Events"]
+D --> E1
+D --> E2
 
-%% Disease Branch
-D["🩺 DISEASE BRANCH<br/><br/>
-layer3 + layer4 + FPN<br/>
-Embedding: emb_d [256]<br/>
-PatientAttention<br/>
-LayerNorm + MLP<br/>
-→ 3 Diseases"]
+E1[🫁 EventBranch<br/><br/>
+layer3 + layer4 + FPN]
 
-%% Fusion
-F["🔀 CrossAttentionFusion<br/><br/>
-Bidirectional Multi-Head Attention<br/>
-4 Attention Heads"]
+E2[🩺 DiseaseBranch<br/><br/>
+layer3 + layer4 + FPN]
 
-S --> E
-S --> D
+E1 --> F
+E2 --> F
 
-E --> F
-D --> F
+F[🔀 CrossAttentionFusion<br/><br/>
+Bidirectional MHA<br/>4 Heads]
+
+F --> G1
+F --> G2
+
+G1[📍 EventHead<br/><br/>
+LayerNorm + MLP<br/>→ 4 Event Labels]
+
+G2[🧬 PatientAttention<br/><br/>
+Aggregate All Cycles]
+
+G2 --> H
+
+H[🏥 DiseaseHead<br/><br/>
+LayerNorm + MLP<br/>→ 3 Disease Labels]
 
 end
 
-C --> S
+%% =========================
+%% PREDICTIONS
+%% =========================
 
-class S,E,D,F model
+G1 --> I
+H --> J
 
-%% =====================================================
-%% OUTPUTS
-%% =====================================================
+I[📈 Event Probabilities<br/>Per Cycle]
 
-P1["📊 EVENT PROBABILITIES<br/><br/>
-Per Respiratory Cycle"]
+J[📈 Disease Probabilities<br/>Patient-Level]
 
-P2["📊 DISEASE PROBABILITIES<br/><br/>
-Patient Level"]
-
-F --> P1
-F --> P2
-
-class P1,P2 output
-
-%% =====================================================
+%% =========================
 %% XAI
-%% =====================================================
+%% =========================
 
-subgraph XAI["🔥 EXPLAINABLE AI"]
-direction TB
+I --> K
+J --> K
 
-X1["Dual-Target Grad-CAM"]
+K[🔥 Dual-Target Grad-CAM<br/><br/>
+cam_event_pred<br/>
+cam_disease_pred<br/>
+cam_disease_alt<br/>
+cam_diff]
 
-X2["cam_pred · cam_alt · cam_diff"]
+%% =========================
+%% TOP-K SELECTOR
+%% =========================
 
-X3["Top-3 Cycle Selector<br/><br/>
-Abnormal cycles prioritized"]
+K --> L
 
-X1 --> X2 --> X3
+L[🎯 Top-3 Cycle Selector<br/><br/>
+Priority:<br/>
+• Abnormal Events<br/>
+• Highest CAM Peak]
 
-end
+L --> M1
+L --> M2
+L --> M3
 
-P1 --> X1
-P2 --> X1
+M1[Cycle #1]
+M2[Cycle #2]
+M3[Cycle #3]
 
-class X1,X2,X3 xai
-
-%% =====================================================
+%% =========================
 %% QLORA
-%% =====================================================
+%% =========================
 
-subgraph LLM["🤖 QLORA REASONING ENGINE"]
-direction TB
+M1 --> N
+M2 --> N
+M3 --> N
 
-Q0["Qwen2.5-7B-Instruct<br/>
-QLoRA Fine-tuned"]
+N[🤖 QLoRA Clinical Reasoning<br/><br/>
+Qwen2.5-7B-Instruct<br/>
++ LoRA Adapter]
 
-Q1["6-Step Clinical Reasoning<br/><br/>
-1. Event Assessment<br/>
-2. Disease Assessment<br/>
+N --> O
+
+O[🧾 6-Step Diagnostic Analysis<br/><br/>
+1. Event Reliability<br/>
+2. Disease Reliability<br/>
 3. Retrieval Evaluation<br/>
 4. Prototype Similarity<br/>
 5. Conflict Detection<br/>
-6. Final Conclusion"]
+6. Final Conclusion]
 
-Q0 --> Q1
+%% =========================
+%% FINAL AGGREGATION
+%% =========================
 
-end
+O --> P
 
-X3 --> Q0
+P[🗳 Majority Vote Aggregation<br/><br/>
+3 Cycles → 1 Final Decision]
 
-class Q0,Q1 llm
+P --> Q
 
-%% =====================================================
-%% FINAL
-%% =====================================================
+Q[🌐 JSON Response<br/>FastAPI Backend]
 
-V1["🗳️ MAJORITY VOTE<br/><br/>
-3 Cycles → Final Verdict"]
+Q --> R
 
-V2["📄 JSON RESPONSE"]
+R[🖥 React + Three.js Frontend<br/><br/>
+Interactive 3D Lung Visualization]
 
-V3["🌐 THREE.JS FRONTEND"]
+%% =========================
+%% COLORS
+%% =========================
 
-Q1 --> V1 --> V2 --> V3
+style A fill:#111827,color:#fff,stroke:#000
+style B fill:#0f766e,color:#fff,stroke:#134e4a
+style C fill:#0369a1,color:#fff,stroke:#0c4a6e
 
-class V1,V2,V3 output
+style D fill:#7c3aed,color:#fff,stroke:#581c87
 
-## 🔊 Data Pipeline
+style E1 fill:#dc2626,color:#fff,stroke:#7f1d1d
+style E2 fill:#2563eb,color:#fff,stroke:#1e3a8a
 
-### Audio Preprocessing Flow
+style F fill:#9333ea,color:#fff,stroke:#581c87
 
+style G1 fill:#ea580c,color:#fff,stroke:#7c2d12
+style G2 fill:#0891b2,color:#fff,stroke:#164e63
+style H fill:#16a34a,color:#fff,stroke:#14532d
+
+style I fill:#374151,color:#fff
+style J fill:#374151,color:#fff
+
+style K fill:#be123c,color:#fff,stroke:#881337
+style L fill:#ca8a04,color:#fff,stroke:#713f12
+
+style M1 fill:#475569,color:#fff
+style M2 fill:#475569,color:#fff
+style M3 fill:#475569,color:#fff
+
+style N fill:#111827,color:#fff,stroke:#000
+style O fill:#374151,color:#fff
+
+style P fill:#15803d,color:#fff,stroke:#14532d
+style Q fill:#0f766e,color:#fff,stroke:#134e4a
+style R fill:#1d4ed8,color:#fff,stroke:#1e3a8a
 ```
-  Raw Audio Bytes
-       │
-       ▼
-  librosa.load(sr=16 000, mono=True)
-  ├─ Resample to 16 kHz
-  └─ Force mono
-       │
-       ▼
-  Butterworth Bandpass Filter
-  ├─ Order  : 5th
-  ├─ Pass   : 100 – 2 000 Hz
-  └─ Method : zero-phase filtfilt
-       │
-       ▼
-  Z-score Normalization
-  └─ (x − μ) / (σ + 1e-8)
-       │
-       ▼
-  Sliding Window Segmentation
-  ├─ Window : 6 s  =  96 000 samples
-  └─ Hop    : 3 s  =  48 000 samples  (50 % overlap)
-       │
-       ▼
-  Log-Mel Spectrogram  (per segment)
-  ├─ n_fft      =  1 024
-  ├─ hop_length =    512
-  ├─ n_mels     =    128
-  ├─ f_min      =     50 Hz
-  ├─ f_max      =  4 000 Hz
-  ├─ power      =    2.0
-  └─ log_mel    =  log(mel + 1e-6)  →  per-segment z-norm
-       │
-       ▼
-  Tensor  [1, 1, 128, 188]   (B, C, F, T)
-```
-
-### Spectrogram Parameters
-
-| Parameter | Value | Derivation |
-|-----------|-------|-----------|
-| Sample rate | 16 000 Hz | Standard medical audio |
-| Window duration | 6 s | One full respiratory cycle |
-| Hop duration | 3 s | 50 % overlap |
-| FFT size | 1 024 | ≈ 64 ms resolution |
-| Hop length | 512 samples | ≈ 32 ms frame shift |
-| Mel bins | 128 | Clinical frequency resolution |
-| Time frames | 188 | ⌊(96 000 − 1 024) / 512⌋ + 1 |
-| Output shape | `[1, 1, 128, 188]` | (B, C, F, T) |
-
-> **Design rationale** — The bandpass filter removes sub-100 Hz body-motion artifacts and high-frequency noise outside the clinical stethoscope range. `fmax=4 000 Hz` covers the full diagnostic band of crackles (200–2 000 Hz) and wheezes (100–1 000 Hz). The 50 % overlapping window guarantees that short, transient events straddling window boundaries are always captured at least once.
-
-### Edge Cases
-
-| Condition | Handling |
-|-----------|----------|
-| Recording < 6 s | Tile-repeat the signal to fill exactly 6 s |
-| Single short cycle | Produces exactly one cycle from the full signal |
-| Long recordings | `⌊(len − win) / hop⌋ + 1` cycles produced |
 
 ---
 
-## 🧠 DualBranch Multi-Task Model
+## 3. Data Pipeline
 
-### Task Overview
+### 3.1 Audio Loading and Preprocessing
 
-| Task | Granularity | Labels | Classes |
-|------|-------------|--------|---------|
-| **Event classification** | Per respiratory cycle | Normal · Crackle · Wheeze · Both | 4 |
-| **Disease classification** | Per patient (aggregated) | Healthy · Infectious · Obstructive | 3 |
-
-> **Key insight** — Event and disease labels are *independent*. A "Normal" cycle does not imply a "Healthy" patient — a COPD patient may have silent intervals between wheeze episodes.
-
-### Module Architecture
+All preprocessing is handled in `load_wav_bytes()` and `audio_to_mel()`.
 
 ```
-Input  [B, 1, 128, 188]
-    │
-    ▼
-┌──────────────────────────────────────────────┐
-│  SharedStem   (ResNet18  conv1 → layer2)     │
-│  ├─ c2  [B,  64, 32, 47]                    │
-│  └─ c3  [B, 128, 16, 24]                    │
-└───────────────────┬──────────────────────────┘
-                    │
-        ┌───────────┴───────────┐
-        ▼                       ▼
-┌────────────────┐     ┌────────────────┐
-│  EventBranch   │     │ DiseaseBranch  │
-│  layer3 + 4    │     │  layer3 + 4   │
-│     + FPN      │     │     + FPN     │
-│                │     │               │
-│  c4 [B,256,8,12]     │  c4 [B,256,8,12]
-│  c5 [B,512,4, 6]     │  c5 [B,512,4, 6]
-│    ↓ FPN merge │     │   ↓ FPN merge │
-│  emb_e  [256]  │     │  emb_d  [256] │
-└───────┬────────┘     └────────┬──────┘
-        └──────────┬────────────┘
-                   ▼
-    ┌──────────────────────────────┐
-    │     CrossAttentionFusion     │
-    │    bidirectional  MHA 4h     │
-    │                              │
-    │  e_ctx  = Attn(Q=e, K=d, V=d)│
-    │  gate_e = σ(Linear([e,e_ctx]))│
-    │  emb_e* = LN(e + gate_e·e_ctx)│
-    │                              │
-    │  d_ctx  = Attn(Q=d, K=e, V=e)│
-    │  gate_d = σ(Linear([d,d_ctx]))│
-    │  emb_d* = LN(d + gate_d·d_ctx)│
-    └──────────┬──────────┬────────┘
-               │          │
-         emb_e*│          │emb_d*
-               ▼          ▼
-    ┌──────────────┐   ┌────────────────────┐
-    │  EventHead   │   │  PatientAttention  │
-    │  LN → MLP    │   │  softmax weights   │
-    │  → 4 classes │   │  over N cycles     │
-    └──────────────┘   └─────────┬──────────┘
-                                 ▼
-                        ┌────────────────┐
-                        │  DiseaseHead   │
-                        │  LN → MLP      │
-                        │  → 3 classes   │
-                        └────────────────┘
+Raw Audio Bytes
+      │
+      ▼
+librosa.load(sr=16000, mono=True)        # Resample to 16 kHz, force mono
+      │
+      ▼
+Butterworth Bandpass Filter              # 5th-order, passband: 100–2000 Hz
+  butter(N=5, Wn=[100/8000, 2000/8000], btype='band')
+  filtfilt(b, a, signal)                 # Zero-phase forward-backward filter
+      │
+      ▼
+Z-score Normalization                    # (x - mean) / (std + ε), ε=1e-8
+      │
+      ▼
+Sliding Window Segmentation
+  window = 6s × 16000 = 96000 samples
+  hop    = 3s × 16000 = 48000 samples   # 50% overlap
+      │
+      ▼
+Per-Segment Log-Mel Spectrogram
+  n_fft      = 1024
+  hop_length = 512
+  n_mels     = 128
+  fmin       = 50 Hz
+  fmax       = 4000 Hz
+  power      = 2.0  (power spectrogram)
+  log_mel    = log(mel + 1e-6)
+  normalized = (log_mel - mean) / (std + 1e-8)   # per-segment normalization
+      │
+      ▼
+Output: Tensor [1, 1, 128, 188]          # (batch, channel, mel_bins, time_frames)
 ```
 
-### Classification Head Architecture
+**Frequency design rationale:**
+- The bandpass filter removes sub-100 Hz body motion artifacts and above-2 kHz noise beyond the clinical stethoscope range.
+- `fmax=4000 Hz` for the Mel filterbank captures the full diagnostic range of crackles (200–2000 Hz) and wheezes (100–1000 Hz) while discarding HF noise.
+- The 50% overlapping window ensures that short, transient events (crackles) that may straddle two non-overlapping windows are always captured at least once.
+
+### 3.2 Spectrogram Shape
+
+| Parameter | Value | Derivation |
+|---|---|---|
+| Sample rate | 16,000 Hz | Standard medical audio |
+| Window duration | 6 s | One full respiratory cycle |
+| Hop duration | 3 s | 50% overlap |
+| FFT size | 1,024 | ~64 ms resolution |
+| Hop length | 512 samples | ~32 ms frame shift |
+| Mel bins | 128 | Clinical frequency resolution |
+| Time frames | 188 | ⌊(96000 − 1024) / 512⌋ + 1 |
+| Tensor shape | `[1, 1, 128, 188]` | `(B, C, F, T)` |
+
+### 3.3 Edge Cases
+
+- **Short recordings** (< 6 s): tile-repeat the signal to fill exactly 6 s.
+- **Single cycle** (< 6 s total): produces exactly one cycle from the full signal.
+- **Long recordings**: produce `⌊(len − win) / hop⌋ + 1` cycles.
+
+---
+
+## 4. DualBranch Multi-Task Model
+
+### 4.1 Overview
+
+The model solves two tasks simultaneously:
+
+| Task | Granularity | Labels |
+|---|---|---|
+| **Event classification** | Per respiratory cycle | Normal / Crackle / Wheeze / Both (4 classes) |
+| **Disease classification** | Per patient (aggregated) | Healthy / Infectious / Obstructive (3 classes) |
+
+The key design insight is that **event and disease are independent tasks**. A "Normal" acoustic event in a cycle does not imply a "Healthy" disease label — a patient with COPD may have cycles with no adventitious sounds between wheeze episodes.
+
+### 4.2 SharedStem
+
+```python
+class SharedStem(nn.Module):
+    """
+    Shared convolutional backbone — adapted ResNet18 layers 1-2.
+    Input:  [B, 1, 128, 188]  (single-channel Log-Mel spectrogram)
+    Output: c2 [B, 64,  32, 47]   (layer1 features)
+             c3 [B, 128, 16, 24]  (layer2 features)
+    """
+```
+
+The first convolutional layer is adapted from ImageNet pre-training (RGB → mono) by averaging the three input channel weights:
+```python
+base.conv1.weight.copy_(old_conv.weight.mean(dim=1, keepdim=True))
+```
+This preserves pre-trained spatial filters while accepting single-channel spectrograms.
+
+### 4.3 BranchUpper + Feature Pyramid Network (FPN)
+
+Each branch (Event and Disease) receives the shared `[c2, c3]` feature maps and processes them independently through ResNet18 `layer3` and `layer4`, followed by a multi-scale FPN:
+
+```
+c2 [B, 64,  32, 47]  ─────────────────────────────────────────── lateral conv → 256ch
+c3 [B, 128, 16, 24]  ────────────────────────── lateral conv → 256ch → +upsample(c4)
+c4 [B, 256,  8, 12]  ──────────── lateral conv → 256ch → +upsample(c5)
+c5 [B, 512,  4,  6]  ── lateral conv → 256ch (top-down start)
+                              │
+                      AdaptiveAvgPool2d(1) → Flatten
+                              │
+                         emb [B, 256]
+```
+
+The top-down FPN merges multi-scale features, enabling the network to attend to both fine-grained temporal patterns (crackle bursts, millisecond-scale) and global spectral structure (wheeze bands, second-scale).
+
+### 4.4 CrossAttentionFusion
+
+After each branch produces its 256-dimensional embedding independently, a bidirectional cross-attention module allows the branches to exchange information:
+
+```python
+# Event branch queries the disease branch context
+e_ctx, _ = self.ca_d2e(query=emb_e, key=emb_d, value=emb_d)
+gate_e   = sigmoid(Linear(cat([emb_e, e_ctx])))
+emb_e*   = LayerNorm(emb_e + gate_e * e_ctx)
+
+# Disease branch queries the event branch context
+d_ctx, _ = self.ca_e2d(query=emb_d, key=emb_e, value=emb_e)
+gate_d   = sigmoid(Linear(cat([emb_d, d_ctx])))
+emb_d*   = LayerNorm(emb_d + gate_d * d_ctx)
+```
+
+The sigmoid gates act as learned interpolation: if the cross-context is not informative, the gate approaches zero and the original embedding is preserved. This prevents destructive interference between the two tasks.
+
+### 4.5 PatientAttention (Cycle-Level Aggregation)
+
+Disease is a patient-level property, so all cycle embeddings must be aggregated before the disease head:
+
+```python
+class PatientAttention(nn.Module):
+    """
+    Soft attention pooling over all respiratory cycles.
+    Input:  [N_cycles, 256]  all emb_d* for one patient
+    Output: [1, 256]          weighted sum
+    """
+    def forward(self, x):
+        w = softmax(Linear(tanh(Linear(x))), dim=0)   # [N, 1] attention weights
+        return (x * w).sum(dim=0, keepdim=True)        # [1, 256]
+```
+
+This allows the model to upweight cycles with the most diagnostically informative disease embeddings (e.g., a cycle with a prominent wheeze in an otherwise variable recording).
+
+### 4.6 Classification Heads
+
+Both heads share the same structure:
 
 ```
 LayerNorm(256)
-    → Linear(256 → 256)  GELU  Dropout(0.4)
-    → Linear(256 → 128)  GELU  Dropout(0.3)
-    → Linear(128 → n_classes)
+→ Linear(256, 256) → GELU → Dropout(0.4)
+→ Linear(256, 128) → GELU → Dropout(0.3)
+→ Linear(128, n_classes)
 ```
 
-### Parameter Summary
+GELU activations are used over ReLU for smoother gradients during fine-tuning. Dropout rates are staggered (0.4 → 0.3) to apply stronger regularization at the wider layer.
+
+### 4.7 Parameter Summary
 
 | Module | Parameters |
-|--------|-----------|
+|---|---|
 | SharedStem | ~1.7 M |
 | EventBranch (BranchUpper + FPN) | ~8.4 M |
 | DiseaseBranch (BranchUpper + FPN) | ~8.4 M |
@@ -412,236 +446,371 @@ LayerNorm(256)
 
 ---
 
-## 💬 QLoRA Fine-Tuned LLM
+## 5. QLoRA Fine-Tuned LLM
 
-### Model Configuration
+### 5.1 Base Model
 
 | Property | Value |
-|----------|-------|
+|---|---|
 | Base model | `Qwen/Qwen2.5-7B-Instruct` |
-| Fine-tuning method | QLoRA (4-bit NF4 via `bitsandbytes`) |
-| LoRA rank / alpha | 16 / 32 |
-| Target modules | `q_proj` `v_proj` `k_proj` `o_proj` `gate_proj` `up_proj` `down_proj` |
+| Fine-tuning method | QLoRA (Quantized Low-Rank Adaptation) |
+| Quantization | 4-bit NF4 via `bitsandbytes` |
+| LoRA rank | 16 (default) |
+| LoRA alpha | 32 |
+| Target modules | `q_proj`, `v_proj`, `k_proj`, `o_proj`, `gate_proj`, `up_proj`, `down_proj` |
 | Training dtype | `bfloat16` |
-| Trainable params | 83.9 M of 7 699 M (1.09 %) |
-| Max sequence length | 1 024 tokens |
+| Max sequence length | 1,024 tokens |
 | Max new tokens | 800 |
 
-### Sequential Per-Cycle Architecture (v5.2)
+### 5.2 Prompt Format (Alpaca Instruction Style)
+
+Each QLoRA call uses the following format. **No `SYSTEM` prompt is used** — the instruction is embedded directly in `### Instruction:` to match the fine-tuning format:
 
 ```
-  v5.1  ──  [Cycle 1 + Cycle 2 + Cycle 3] ──▶  single QLoRA call  ──▶  1 result
-                              context interference ✗  token budget ✗
+### Instruction:
+You are a clinical AI assistant analyzing lung sound recordings. A dual-branch
+deep learning model has processed the audio segment and produced: (1) event
+predictions at segment-level (Normal/Crackle/Wheeze/Both), (2) disease
+predictions at patient-level aggregated across all segments
+(Healthy/Infectious/Obstructive). You are given raw numerical evidence only
+— no pre-computed interpretations. ...
 
-  v5.2  ──  Cycle 1  ──▶  QLoRA call 1  ──▶  result_1
-            Cycle 2  ──▶  QLoRA call 2  ──▶  result_2
-            Cycle 3  ──▶  QLoRA call 3  ──▶  result_3
-                                │
-                    ┌───────────▼───────────┐
-                    │   Majority Vote        │
-                    │   dis_correct          │
-                    │   final_disease_label  │
-                    │   clinicalNote         │
-                    └───────────────────────┘
+### Input:
+=== CYCLE INFORMATION ===
+  Cycle index  : 3
+  Time range   : 6.0s — 12.0s
+  Rank (disease branch peak CAM priority) : #1
+  Total cycles in recording : 7
+
+=== MODEL PREDICTIONS (THIS CYCLE) ===
+  Event   (segment-level, this cycle) : Wheeze  [conf=0.8712]
+  Disease (patient-level, CNN)        : Obstructive
+  Alt disease (2nd highest prob)      : Infectious
+
+=== EVENT-DISEASE INDEPENDENCE ===
+  ...
+
+=== GRAD-CAM — EVENT BRANCH (this cycle, target: predicted event class) ===
+  freq_high=0.2341 | freq_mid=0.5123 | freq_low=0.1987
+  ...
+
+[... full numerical evidence ...]
+
+### Response:
+```
+
+### 5.3 Expected Output Format (6-Step Clinical Reasoning)
+
+```
+**Step 1: Event Branch Assessment**
+The event branch reports a Wheeze with high confidence (0.87). Entropy is low
+(0.42) and margin is large (0.65), indicating the event prediction is reliable...
+
+**Step 2: Disease Branch Assessment**
+The disease branch shows strong activation for Obstructive in the mid-frequency
+bands (freq_mid=0.51), consistent with sub-glottic airflow obstruction...
+
+**Step 3: Retrieval Signal Evaluation**
+The soft retrieval top class is Obstructive with avg_sim=0.88. The sim_gap_top2
+is 0.18 (> 0.05 threshold), so the retrieval signal is unambiguous and should
+be weighted fully...
+
+**Step 4: Prototype Cosine Similarity**
+Obstructive has the highest prototype similarity (0.73), confirming alignment
+with the learned disease cluster...
+
+**Step 5: Conflict Identification**
+All three signals — CNN prediction, retrieval, and prototype — agree on
+Obstructive. No significant conflict detected...
+
+**Step 6: Final Conclusion**
+The evidence unanimously supports Obstructive Lung Disease. The high-confidence
+wheeze, strong disease CAM activation in the mid-frequency respiratory band,
+unambiguous retrieval signal, and highest prototype score all align. The model
+prediction is correct.
+```
+
+### 5.4 Output Parsing (`parse_qlora_output_v2`)
+
+The parser uses a two-pass strategy:
+
+**Pass 1 — Step extraction (`extract_steps_v2`):**
+A universal regex captures ALL Qwen2.5 output formats:
+- `**Step N: Title**` (bold markdown — primary Qwen2.5 format)
+- `**Step N — Title**`
+- `#### Step N: Title` (hash headers)
+- `Step N: Title` (plain)
+
+```python
+pattern = re.compile(
+    r'(?:^|\n)\s*'
+    r'(?:\*{1,2}|#{1,6}\s*)?'    # optional ** or ### prefix
+    r'Step\s*(\d+)'                # "Step N"
+    r'\s*(?:[:\-—]+\s*)?'          # optional separator
+    r'\*{0,2}\s*'
+    r'(.*?)'                       # title
+    r'\*{0,2}\s*\n'
+    r'(.*?)'                       # body
+    r'(?=\n\s*(?:\*{1,2}|#{1,6}\s*)?Step\s*\d+\s*[:\-—]|\Z)',
+    re.I | re.S
+)
+```
+
+**Pass 2 — Verdict extraction:**
+Searches Step 6 text (and full text as fallback) for:
+- Positive phrases: `"model prediction is correct"`, `"confirms the cnn"`, `"correctly identified"`, etc.
+- Negative phrases: `"model prediction is incorrect"`, `"true label is"`, `"disagrees with"`, etc.
+- Label alignment: if `final_label == cnn_pred` → `dis_correct=True`; if different → `dis_correct=False`
+
+### 5.5 Sequential Per-Cycle Independent Calling (v5.2)
+
+The key architectural change in v5.2 vs v5.1:
+
+```
+v5.1 (combined):   [Cycle 1 + Cycle 2 + Cycle 3] → single QLoRA call → 1 result
+
+v5.2 (sequential): Cycle 1 → QLoRA call 1 → wait → result_1
+                   Cycle 2 → QLoRA call 2 → wait → result_2
+                   Cycle 3 → QLoRA call 3 → wait → result_3
+                   [result_1, result_2, result_3] → majority vote → final
 ```
 
 **Advantages of sequential independence:**
-- Each call fits within 1 024 tokens — no truncation
-- Zero context interference between cycles — each analysis is unbiased
-- Majority vote provides robustness against single noisy cycle predictions
-- Enables per-cycle attribution in the UI
+- Each call fits within 1,024 tokens (shorter per-cycle input)
+- No context interference between cycles — each analysis is unbiased by other cycles
+- Majority vote provides robustness against a single cycle's noisy prediction
+- Enables per-cycle attribution in the UI (which cycle drove the final verdict)
 
-### 6-Step Clinical Reasoning Output
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  Step 1 │ Event Branch Assessment                               │
-│         │ Confidence · entropy · margin for event reliability   │
-├─────────────────────────────────────────────────────────────────┤
-│  Step 2 │ Disease Branch Assessment                             │
-│         │ CAM activation bands vs clinical expectations         │
-├─────────────────────────────────────────────────────────────────┤
-│  Step 3 │ Retrieval Signal Evaluation                           │
-│         │ Top class · sim gap · ambiguity threshold 0.05        │
-├─────────────────────────────────────────────────────────────────┤
-│  Step 4 │ Prototype Cosine Similarity                           │
-│         │ Alignment with learned disease cluster prototypes     │
-├─────────────────────────────────────────────────────────────────┤
-│  Step 5 │ Conflict Identification                               │
-│         │ CNN  vs  retrieval  vs  prototype — cross-signal check│
-├─────────────────────────────────────────────────────────────────┤
-│  Step 6 │ Final Conclusion                                      │
-│         │ dis_correct flag · final_label · clinicalNote         │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Majority Vote Aggregation
+### 5.6 Majority Vote Aggregation
 
 ```python
-# dis_correct  → majority among  [True, False, None]
+# dis_correct: majority among [True, False, None (inference)]
 n_correct   = sum(1 for v in votes if v is True)
 n_incorrect = sum(1 for v in votes if v is False)
-agg = True if n_correct > n_incorrect else (
-      False if n_incorrect > n_correct else None)
+agg = True if n_correct > n_incorrect else (False if n_incorrect > n_correct else None)
 
-# final_disease_label  → most common label
+# final_disease_label: most common label across 3 cycle outputs
 from collections import Counter
 agg_label = Counter(final_labels).most_common(1)[0][0]
 ```
 
-> **Important** — The CNN disease prediction is **never overridden** by QLoRA. The LLM acts as a second-opinion layer. If it detects a discrepancy, it raises a `qlora_alt_diagnosis` flag for clinical review.
+**Important:** The CNN disease prediction is **never overridden** by QLoRA. The LLM acts as a second-opinion layer — if it detects a likely discrepancy, it raises an `qlora_alt_diagnosis` flag for clinical review.
 
 ---
 
-## 🔍 Dual-Target Grad-CAM
+## 6. Explainability — Dual-Target Grad-CAM
 
-### Motivation
+### 6.1 Motivation
 
-Standard Grad-CAM highlights regions important for a single class. Dual-target extends this with a **contrast map** for diagnostic specificity:
-
-```
-  cam_pred  =  Grad-CAM( target = predicted_disease )
-  cam_alt   =  Grad-CAM( target = alt_disease       )
-  cam_diff  =  cam_pred − cam_alt
-
-  High cam_diff  →  region is selectively important for the prediction
-                    (not just generally activated)
-```
-
-### CAM Feature Extraction
-
-10 scalar features are extracted per CAM map and fed to the LLM:
-
-| Feature | Description | Clinical Signal |
-|---------|-------------|-----------------|
-| `freq_high` | Mean activation — top ⅓ Mel bins | Broadband crackle bursts |
-| `freq_mid` | Mean activation — mid ⅓ Mel bins | Narrow-band wheeze obstruction |
-| `freq_low` | Mean activation — bottom ⅓ Mel bins | Low-frequency rumbles |
-| `time_early / mid / late` | Temporal activation thirds | Event timing within cycle |
-| `peak` | Maximum CAM value | Prediction confidence anchor |
-| `std` | Standard deviation | Spatial spread |
-| `entropy` | Shannon entropy of normalized CAM | Focal vs diffuse activation |
-| `hot_ratio` | Fraction of pixels > 0.6 | Localization sharpness |
+Standard Grad-CAM highlights regions important for a single predicted class. Dual-target Grad-CAM computes activations for **both** the predicted class and the alternative class, then derives a contrast map:
 
 ```
-  High freq_mid  +  low freq_high   →  wheeze pattern
-  High freq_high +  scattered hot   →  crackle pattern
-  High diff_peak                    →  strong discriminative localization
-  Low diff_abs   +  high diff_ent   →  diffuse / ambiguous prediction
+cam_pred  = Grad-CAM(target=predicted_disease)
+cam_alt   = Grad-CAM(target=alt_disease)
+cam_diff  = cam_pred - cam_alt
+```
+
+A high positive `cam_diff` in a time-frequency region means that region is **selectively important for the predicted disease** (not just generally activated). This provides more diagnostic specificity than single-target CAM.
+
+### 6.2 Implementation
+
+```python
+class DualBranchGradCAM:
+    def __init__(self, model, task):
+        # Hooks on the final conv layer of the appropriate branch:
+        # task='event'   → model.event_upper.layer4[-1]
+        # task='disease' → model.disease_upper.layer4[-1]
+
+    def compute(self, inp, target_class):
+        # Standard Grad-CAM formula:
+        # α_k = (1/Z) Σ_ij (∂score / ∂A^k_ij)   [global average pooling of gradients]
+        # CAM = ReLU(Σ_k α_k A^k)               [weighted sum of activation maps]
+        # Upsample to input resolution via bilinear interpolation
+        # Normalize to [0, 1]
+
+    def dual_target(self, inp, pred_class, alt_class):
+        cam_pred = self.compute(inp, pred_class)
+        cam_alt  = self.compute(inp, alt_class)
+        return cam_pred, cam_alt
+```
+
+### 6.3 CAM Feature Extraction
+
+For each CAM map, 10 scalar features are extracted to feed into the LLM:
+
+| Feature | Description |
+|---|---|
+| `freq_high` | Mean activation in top 1/3 of Mel bins (high-freq region) |
+| `freq_mid` | Mean activation in middle 1/3 of Mel bins |
+| `freq_low` | Mean activation in bottom 1/3 of Mel bins |
+| `time_early` | Mean activation in first 1/3 of time frames |
+| `time_mid` | Mean activation in middle 1/3 of time frames |
+| `time_late` | Mean activation in last 1/3 of time frames |
+| `peak` | Maximum CAM value |
+| `std` | Standard deviation of CAM values |
+| `entropy` | Shannon entropy of normalized CAM (measures spatial diffuseness) |
+| `hot_ratio` | Fraction of pixels with activation > 0.6 (focal vs. diffuse) |
+
+**Clinical interpretation guidance:**
+- High `freq_mid` + low `freq_high` → wheeze pattern (narrow-band mid-frequency obstruction)
+- High `freq_high` + scattered `hot_ratio` → crackle pattern (broadband transient bursts)
+- High `diff_peak` → strong discriminative localization (high-confidence prediction)
+- Low `diff_abs_mean` + high `diff_entropy` → diffuse, ambiguous CAM (uncertain prediction)
+
+---
+
+## 7. Inference Flow (v5.2 Sequential Per-Cycle)
+
+```
+1. Receive audio file (bytes)
+2. load_wav_bytes() → N cycles of [1,1,128,188] tensors
+
+3. For each cycle i in [1..N]:
+   a. model.forward(mel) → emb_e_i, emb_d_i, ev_logits_i
+   b. pred_event_i = argmax(ev_logits_i)
+   c. Accumulate all_emb_d
+
+4. Patient-level disease:
+   stacked = cat([emb_d_1, ..., emb_d_N], dim=0)  [N, 256]
+   patient_d = model.patient_disease(stacked)       [1, 3]
+   pred_disease = argmax(patient_d)
+
+5. Grad-CAM for each cycle:
+   cam_event_pred = gcam_event.compute(mel, pred_event)
+   cam_dis_pred, cam_dis_alt = gcam_disease.dual_target(mel, pred_disease, alt_disease)
+   cam_diff = cam_dis_pred - cam_dis_alt
+   Save PNG visualization
+
+6. Top-3 selection:
+   - Sort abnormal cycles (event ≠ Normal) by cam_disease.peak desc
+   - Fill remaining slots with normal cycles sorted by cam_disease.peak
+   - Assign rank 1-2-3 by cam peak priority
+
+7. QLoRA Sequential (for cycle_i in top3_cycles):
+   a. Build input_text_i = build_input_text_single_cycle(cycle_i, patient_signals)
+   b. Tokenize → [input_ids, attention_mask]
+   c. model.generate(..., max_new_tokens=800, do_sample=False, rep_penalty=1.1)
+   d. Decode → raw_output_i
+   e. parsed_i = parse_qlora_output_v2(raw_output_i, pred_disease)
+
+8. Aggregation:
+   clinical = aggregate_cycle_qlora_results([parsed_1, parsed_2, parsed_3])
+   → majority vote dis_correct, final_disease_label, clinicalNote
+
+9. Build and return JSON response
 ```
 
 ---
 
-## ⚙️ Inference Flow (v5.2)
+## 8. Weights & Checkpoints
 
-```
-  1  Receive audio bytes
-     │
-  2  load_wav_bytes()
-     └─▶  N × [1,1,128,188]  Log-Mel tensors
-     │
-  3  Per-cycle CNN forward pass
-     └─▶  emb_e_i, emb_d_i, ev_logits_i  for each i
-     │
-  4  Patient-level disease
-     └─▶  stacked [N,256]  →  patient_disease()  →  pred_disease
-     │
-  5  Dual-target Grad-CAM per cycle
-     ├─▶  cam_event_pred
-     ├─▶  cam_dis_pred, cam_dis_alt
-     └─▶  cam_diff = cam_dis_pred − cam_dis_alt
-     │
-  6  Top-3 cycle selection
-     ├─  Sort abnormal cycles  (event ≠ Normal)  by cam_disease.peak ↓
-     └─  Fill slots with normal cycles  by cam_disease.peak ↓
-     │
-  7  QLoRA sequential (for each cycle in top-3, independently)
-     ├─▶  build_input_text_single_cycle()
-     ├─▶  tokenize  →  generate (max_new_tokens=800, greedy)
-     └─▶  parse_qlora_output_v2()  →  parsed_i
-     │
-  8  Majority vote aggregation
-     └─▶  aggregate_cycle_qlora_results([p1, p2, p3])
-     │
-  9  Return JSON response
-```
+### 8.1 CNN DualBranch Model
 
----
+<!-- ============================================================ -->
+<!-- TODO: Replace the links below with your actual download URLs -->
+<!-- ============================================================ -->
 
-## 📦 Weights & Checkpoints
+| Checkpoint | Stage | Val F1 | Size | Download |
+|---|---|---|---|---|
+| `best_stage3_f10.6032.pth` | Stage 3 (full fine-tune) | 0.6032 | ~75 MB | [📥 Google Drive](#) · [📥 HuggingFace](#) |
+| `best_stage2_f10.5891.pth` | Stage 2 (branch heads) | 0.5891 | ~75 MB | [📥 Google Drive](#) · [📥 HuggingFace](#) |
+| `best_stage1_f10.5412.pth` | Stage 1 (heads only) | 0.5412 | ~75 MB | [📥 Google Drive](#) · [📥 HuggingFace](#) |
 
-### CNN DualBranch Checkpoints
-
-| Checkpoint | Training Stage | Val F1 | Size | Download |
-|------------|---------------|--------|------|---------|
-| `best_stage3_f10.6032.pth` | Stage 3 — full fine-tune | **0.6032** | ~75 MB | [Google Drive](#) · [HuggingFace](#) |
-| `best_stage2_f10.5891.pth` | Stage 2 — branch heads | 0.5891 | ~75 MB | [Google Drive](#) · [HuggingFace](#) |
-| `best_stage1_f10.5412.pth` | Stage 1 — heads only | 0.5412 | ~75 MB | [Google Drive](#) · [HuggingFace](#) |
-
+**To download and place:**
 ```bash
-mkdir -p weights/
-wget -O weights/best_stage3_f10.6032.pth "https://YOUR_DOWNLOAD_URL/..."
+# Create checkpoint directory
+mkdir -p /content/drive/MyDrive/
+
+# Download the Stage 3 checkpoint (replace URL with actual link)
+wget -O /content/drive/MyDrive/best_stage3_f10.6032.pth \
+  "https://YOUR_DOWNLOAD_URL/best_stage3_f10.6032.pth"
 ```
 
-### QLoRA Adapter
+### 8.2 QLoRA Adapter
 
-| Adapter | Base Model | Epochs | Download |
-|---------|-----------|--------|---------|
-| `lora_adapter_20260507_1431` | Qwen2.5-7B-Instruct | 3 | [Google Drive](#) · [HuggingFace](#) |
+<!-- ============================================================ -->
+<!-- TODO: Replace the links below with your actual download URLs -->
+<!-- ============================================================ -->
 
+| Adapter | Base Model | Training Epochs | Download |
+|---|---|---|---|
+| `lora_adapter_20260507_1431` | Qwen2.5-7B-Instruct | 3 | [📥 Google Drive](#) · [📥 HuggingFace](#) |
+
+The adapter directory contains:
 ```
-weights/lora_adapter_20260507_1431/
-├── adapter_config.json           ← LoRA hyperparameters
-├── adapter_model.safetensors     ← weight deltas (~120 MB)
+lora_adapter_20260507_1431/
+├── adapter_config.json          # LoRA hyperparameters
+├── adapter_model.safetensors    # LoRA weight deltas (~120 MB)
 ├── tokenizer.json
 ├── tokenizer_config.json
 ├── special_tokens_map.json
 └── tokenizer.model
 ```
 
-### Override Paths
-
+**To download and place:**
 ```bash
-export CHECKPOINT_PATH="./weights/best_stage3_f10.6032.pth"
-export QLORA_ADAPTER_PATH="./weights/lora_adapter_20260507_1431"
+# Create adapter directory
+mkdir -p /content/drive/MyDrive/lung/qlora_output/
+
+# Download adapter (replace URL with actual link)
+wget -O /tmp/lora_adapter.zip \
+  "https://YOUR_DOWNLOAD_URL/lora_adapter_20260507_1431.zip"
+
+unzip /tmp/lora_adapter.zip \
+  -d /content/drive/MyDrive/lung/qlora_output/
+```
+
+### 8.3 Changing Checkpoint Paths
+
+Update via environment variables (recommended for deployment):
+```bash
+export CHECKPOINT_PATH="/your/path/to/best_stage3_f10.6032.pth"
+export QLORA_ADAPTER_PATH="/your/path/to/lora_adapter_20260507_1431"
+```
+
+Or edit directly in `main_v5_2.py`:
+```python
+CHECKPOINT_PATH    = "/your/path/to/best_stage3_f10.6032.pth"
+QLORA_ADAPTER_PATH = "/your/path/to/lora_adapter_20260507_1431"
 ```
 
 ---
 
-## 🔧 Installation
+## 9. Installation
 
-### Requirements
+### 9.1 Requirements
 
-| Requirement | Minimum | Recommended |
-|-------------|---------|-------------|
-| Python | 3.9 | 3.10 |
-| CUDA | 11.8 | 12.x |
-| GPU VRAM | 16 GB | 24 GB |
-| System RAM | 16 GB | 32 GB |
-| Disk space | 20 GB | — |
+| Requirement | Minimum Version | Notes |
+|---|---|---|
+| Python | 3.9+ | 3.10 recommended |
+| CUDA | 11.8+ | Required for QLoRA 4-bit inference |
+| GPU VRAM | 16 GB | 24 GB recommended for QLoRA + CNN simultaneously |
+| RAM | 16 GB | 32 GB recommended |
+| Disk space | 20 GB | For model weights + audio cache |
 
-### Setup
+### 9.2 Environment Setup
 
 ```bash
-# 1. Clone
+# 1. Clone the repository
 git clone https://github.com/YOUR_USERNAME/pneumoai.git
 cd pneumoai
 
-# 2. Virtual environment
-python -m venv .venv && source .venv/bin/activate
+# 2. Create virtual environment
+python -m venv .venv
+source .venv/bin/activate          # Linux/macOS
+# .venv\Scripts\activate           # Windows
 
-# 3. PyTorch with CUDA
-pip install torch torchvision torchaudio \
-    --index-url https://download.pytorch.org/whl/cu118
+# 3. Install PyTorch with CUDA (adjust CUDA version to your system)
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 
-# 4. All dependencies
+# 4. Install all other dependencies
 pip install -r requirements.txt
 ```
 
-### `requirements.txt`
+### 9.3 `requirements.txt`
 
 ```text
-# Deep learning
+# Core deep learning
 torch>=2.0.0
 torchvision>=0.15.0
 torchaudio>=2.0.0
@@ -652,12 +821,12 @@ peft>=0.10.0
 bitsandbytes>=0.43.0
 accelerate>=0.28.0
 
-# Audio
+# Audio processing
 librosa>=0.10.0
 soundfile>=0.12.0
 scipy>=1.11.0
 
-# API
+# API server
 fastapi>=0.110.0
 uvicorn[standard]>=0.29.0
 python-multipart>=0.0.9
@@ -667,12 +836,15 @@ numpy>=1.24.0
 matplotlib>=3.8.0
 Pillow>=10.0.0
 nest-asyncio>=1.6.0
-pyngrok>=7.0.0          # optional, for Colab tunnel
+
+# Optional: ngrok tunnel for Colab deployment
+pyngrok>=7.0.0
 ```
 
-### Google Colab
+### 9.4 Google Colab Setup
 
 ```python
+# Install all dependencies in Colab
 !pip install -q \
   torch torchvision torchaudio \
   transformers peft bitsandbytes accelerate \
@@ -680,160 +852,226 @@ pyngrok>=7.0.0          # optional, for Colab tunnel
   fastapi uvicorn python-multipart \
   numpy matplotlib Pillow nest-asyncio pyngrok
 
+# Mount Google Drive (for checkpoints)
 from google.colab import drive
 drive.mount('/content/drive')
 
+# Verify GPU availability
 import torch
-print(f"GPU: {torch.cuda.get_device_name(0)}")
+print(f"CUDA available: {torch.cuda.is_available()}")
+print(f"GPU: {torch.cuda.get_device_name(0) if torch.cuda.is_available() else 'None'}")
 ```
 
 ---
 
-## 🚀 Quick Start
+## 10. Quick Start
 
-### Start the Server
+### 10.1 Running the Server
 
 ```bash
+# Set checkpoint paths (or edit in main_v5_2.py directly)
 export CHECKPOINT_PATH="./weights/best_stage3_f10.6032.pth"
 export QLORA_ADAPTER_PATH="./weights/lora_adapter_20260507_1431"
 
+# Optional: set ngrok token for public URL
+export NGROK_AUTH_TOKEN="your_ngrok_token_here"
+
+# Start the server
 python main_v5_2.py
-# → Ready at http://0.0.0.0:8000  (init takes ~30–60 s on GPU)
 ```
 
-### Python Client
+The server will start on `http://0.0.0.0:8000`. On startup, both the CNN and QLoRA models are pre-loaded. Expect ~30–60 seconds for full initialization on a GPU machine.
+
+### 10.2 Running in Google Colab
+
+```python
+# In a Colab cell, execute the entire script:
+exec(open("main_v5_2.py").read())
+```
+
+The `nest_asyncio.apply()` at the bottom of `main_v5_2.py` allows asyncio to run inside Jupyter/Colab environments. The ngrok tunnel starts automatically after a 1.8-second delay and prints the public URL.
+
+### 10.3 Analyzing an Audio File (Python Client)
 
 ```python
 import requests
 
+# Analyze a stethoscope recording
 with open("patient_recording.wav", "rb") as f:
     response = requests.post(
         "http://localhost:8000/analyze",
         files={"file": ("recording.wav", f, "audio/wav")}
     )
 
-r = response.json()["result"]
-print(f"Dominant event   : {r['dominantEvent']}")
-print(f"Disease (CNN)    : {r['cnn_pred_disease']}  ({r['cnn_confidence']} %)")
-print(f"QLoRA verdict    : {r['qlora_dis_correct']}")
-print(f"Clinical note    : {r['clinicalNote']}")
-print(f"Processing time  : {r['processing_time_ms']} ms")
+result = response.json()["result"]
+
+# Primary outputs
+print(f"Dominant Event      : {result['dominantEvent']}")
+print(f"Disease (CNN)       : {result['cnn_pred_disease']} ({result['cnn_confidence']}%)")
+print(f"LLM Source          : {result['llm_source']}")
+print(f"QLoRA Verdict       : {result['qlora_dis_correct']}")
+print(f"Clinical Note       : {result['clinicalNote']}")
+print(f"Processing Time     : {result['processing_time_ms']} ms")
+
+# Per-cycle QLoRA steps
+for cycle in result["qlora_per_cycle"]:
+    print(f"\nCycle {cycle['cycle_index']} [{cycle['start_sec']}s–{cycle['end_sec']}s]")
+    print(f"  dis_correct  : {cycle['dis_correct']}")
+    print(f"  final_label  : {cycle['final_label']}")
+    print(f"  Step 6       : {cycle['qlora_steps']['step6_conclusion'][:200]}...")
 ```
 
-### cURL
+### 10.4 cURL Example
 
 ```bash
-# Full pipeline (CNN + QLoRA)
 curl -X POST "http://localhost:8000/analyze" \
-     -H "accept: application/json" \
-     -F "file=@patient_recording.wav;type=audio/wav"
+  -H "accept: application/json" \
+  -F "file=@patient_recording.wav;type=audio/wav"
+```
 
-# Lightweight CNN-only (faster)
+### 10.5 Lightweight Endpoint (No QLoRA)
+
+```bash
+# For quick CNN-only inference (no QLoRA, much faster)
 curl -X POST "http://localhost:8000/analyze/top3" \
-     -F "file=@recording.wav"
+  -F "file=@recording.wav"
 ```
 
 ---
 
-## 📡 API Reference
+## 11. API Reference
 
-### `POST /analyze` — Full Pipeline
+### `POST /analyze`
 
-```
-Request   multipart/form-data
-          file  UploadFile  WAV/MP3/FLAC/OGG/M4A/WEBM  max 100 MB
+Full inference pipeline including CNN + QLoRA sequential per-cycle analysis.
 
-Response  application/json
-```
+**Request:** `multipart/form-data`
 
-<details>
-<summary><b>Response schema (click to expand)</b></summary>
+| Field | Type | Description |
+|---|---|---|
+| `file` | `UploadFile` | Audio file (WAV/MP3/FLAC/OGG/M4A/WEBM), max 100 MB |
+
+**Response:** `application/json`
 
 ```jsonc
 {
   "result": {
-    // ── Event ──────────────────────────────────────────────────────────
-    "dominantEvent":     "Wheeze",
-    "eventCounts":       { "Normal": 2, "Wheeze": 5 },
-    "soundType":         "wheeze",
+    // ── Event (dominant across all cycles) ─────────────────────────────
+    "soundType":     "wheeze",          // chip key: normal/crackle/wheeze/rhonchi
+    "soundTypeVN":   "Wheeze sound",
+    "dominantEvent": "Wheeze",
+    "eventCounts":   { "Normal": 2, "Wheeze": 5 },
 
-    // ── CNN Disease ────────────────────────────────────────────────────
-    "cnn_pred_disease":  "Obstructive",
-    "cnn_confidence":    82,
-    "cnn_alt_disease":   "Infectious",
+    // ── CNN Disease ─────────────────────────────────────────────────────
     "primaryDiagnosis": {
       "name":        "Obstructive Lung Disease",
-      "probability": 82,
-      "severity":    "high"
+      "nameEN":      "Obstructive Lung Disease",
+      "probability": 82,               // percentage (int)
+      "severity":    "high",           // low / medium / high
+      "disease":     "Obstructive",
+      "source":      "CNN-DualBranch"
     },
     "differentials": [
-      { "name": "Respiratory Infection", "probability": 13 },
-      { "name": "Normal",               "probability":  5 }
+      { "name": "Respiratory Infection", "nameVI": "Respiratory Infection", "probability": 13 },
+      { "name": "Normal",               "nameVI": "Normal",                "probability": 5  }
     ],
+    "cnn_pred_disease":    "Obstructive",
+    "cnn_confidence":      82,
+    "cnn_alt_disease":     "Infectious",
 
-    // ── QLoRA aggregated ───────────────────────────────────────────────
-    "qlora_dis_correct":         true,
-    "clinicalNote":              "Lung sounds suggest chronic obstructive...",
-    "llm_source":                "qlora",
-    "qloraAlternativeDiagnosis": null,
+    // ── LLM aggregated output ───────────────────────────────────────────
+    "clinicalNote":    "Lung sounds suggest chronic obstructive disease...",
+    "recommendations": ["Spirometry", "Bronchodilator therapy", ...],
+    "llm_source":      "qlora",        // "qlora" or "fallback"
 
-    // ── Per-cycle QLoRA details ────────────────────────────────────────
+    // ── QLoRA aggregated verdict ────────────────────────────────────────
+    "qlora_dis_correct":    true,       // majority vote: true/false/null
+    "qlora_is_correct":     true,
+    "qlora_correct_flag":   "Correct: True",
+    "qlora_parse_ok":       true,
+    "qloraAlternativeDiagnosis": null, // populated if majority disagrees with CNN
+
+    // ── Per-cycle QLoRA details ─────────────────────────────────────────
     "qlora_per_cycle": [
       {
-        "cycle_index":  3,
-        "cycle_rank":   1,
-        "start_sec":    6.0,
+        "cycle_index": 3,
+        "cycle_rank":  1,
+        "cycle_event": "Wheeze",
+        "start_sec":   6.0,
         "end_sec":     12.0,
-        "dis_correct":  true,
-        "final_label":  "Obstructive",
+        "dis_correct": true,
+        "ev_correct":  null,
+        "parse_ok":    true,
+        "final_label": "Obstructive",
         "qlora_steps": {
-          "step1_event":      "...",
-          "step2_disease":    "...",
-          "step3_retrieval":  "...",
-          "step4_prototype":  "...",
-          "step5_conflict":   "...",
-          "step6_conclusion": "..."
+          "step1_event":      "The event branch reports Wheeze with high confidence...",
+          "step2_disease":    "The disease branch shows strong activation...",
+          "step3_retrieval":  "Soft retrieval top class is Obstructive...",
+          "step4_prototype":  "Obstructive has the highest prototype similarity...",
+          "step5_conflict":   "No significant conflict detected...",
+          "step6_conclusion": "Evidence unanimously supports Obstructive..."
         }
       }
       // ... cycles 2 and 3
     ],
 
-    // ── Top-3 cycles with CAM data ─────────────────────────────────────
+    // ── Top-3 cycles with CAM data ──────────────────────────────────────
     "top3_cycles": [
       {
         "cycle_index": 3, "rank": 1,
+        "start_sec": 6.0, "end_sec": 12.0,
         "event": "Wheeze", "event_confidence": 0.8712,
-        "cam_event":       { "freq_high": 0.23, "freq_mid": 0.51, "peak": 0.87 },
-        "cam_disease":     { "peak": 0.92, "entropy": 1.84 },
-        "cam_diff":        { "diff_peak": 0.51 },
-        "gradcam_image_url": "/static/gradcam/abc123_c02.png"
+        "disease_pred": "Obstructive", "alt_disease": "Infectious",
+        "cam_event":       { "freq_high": 0.23, "freq_mid": 0.51, ... },
+        "cam_disease":     { "peak": 0.92, "entropy": 1.84, ... },
+        "cam_disease_alt": { "peak": 0.41, ... },
+        "cam_diff":        { "diff_peak": 0.51, "diff_min": -0.08, ... },
+        "gradcam_image_url": "/static/gradcam/abc12345_c02.png"
       }
     ],
 
-    // ── Metadata ───────────────────────────────────────────────────────
+    // ── Uncertainty ─────────────────────────────────────────────────────
+    "uncertainty": {
+      "event":   { "probs": {...}, "entropy": 0.423, "margin": 0.651 },
+      "disease": { "probs": {...}, "entropy": 0.612, "margin": 0.493 }
+    },
+
+    // ── All cycles ──────────────────────────────────────────────────────
+    "cycles":      [ /* per-cycle event predictions + CAM stats */ ],
+    "totalCycles": 7,
+    "audioDuration": 21.3,
+    "gradcam_images": ["/static/gradcam/abc12345_c00.png", ...],
+
+    // ── Metadata ────────────────────────────────────────────────────────
+    "request_id":         "abc12345",
     "processing_time_ms": 8420,
-    "totalCycles":        7,
-    "audioDuration":      21.3,
+    "timestamp":          "2026-05-07T14:31:00.000Z",
+    "model_device":       "cuda",
     "model_version":      "DualBranch-v5.2",
-    "qlora_mode":         "sequential_per_cycle_independent"
+    "qlora_mode":         "sequential_per_cycle_independent",
+    "llm_source":         "qlora"
   }
 }
 ```
 
-</details>
+### `POST /analyze/top3`
 
-### `POST /analyze/top3` — CNN Only (Lightweight)
+Lightweight CNN-only endpoint. Does not call QLoRA.
 
+**Response:**
 ```jsonc
 {
+  "top3_cycles": [ /* same structure as above */ ],
   "disease": {
-    "name":       "Obstructive",
+    "name": "Obstructive",
+    "nameVI": "Obstructive Lung Disease",
     "confidence": 82,
-    "severity":   "high",
+    "severity": "high",
     "probs": { "Healthy": 5.0, "Obstructive": 82.0, "Infectious": 13.0 }
   },
-  "top3_cycles":          [ /* ... */ ],
-  "processing_time_ms":   1240
+  "total_cycles": 7,
+  "processing_time_ms": 1240,
+  "request_id": "xyz98765"
 }
 ```
 
@@ -841,98 +1079,139 @@ Response  application/json
 
 ```jsonc
 {
-  "status":        "ok",
-  "model_loaded":  true,
-  "qlora_loaded":  true,
-  "qlora_mode":    "sequential_per_cycle_independent",
-  "version":       "5.2.0"
+  "status":             "ok",
+  "device":             "cuda",
+  "model_loaded":       true,
+  "qlora_loaded":       true,
+  "qlora_mode":         "sequential_per_cycle_independent",
+  "top_cycles_for_dis": 3,
+  "version":            "5.2.0"
 }
 ```
 
+### `GET /`
+
+Serves the interactive Three.js + HTML frontend.
+
+### `GET /docs`
+
+Swagger UI interactive API documentation.
+
 ---
 
-## 🗂 Project Structure
+## 12. Project Structure
 
 ```
 pneumoai/
+├── main_v5_2.py                  # 🔑 Main application file (all logic)
 │
-├── main_v5_2.py                      ← main application (all logic)
-├── requirements.txt
-├── .env.example
-├── README.md
+├── requirements.txt              # Python dependencies
+├── .env.example                  # Environment variable template
+├── README.md                     # This file
 │
 ├── static/
-│   └── gradcam/
-│       └── {request_id}_c{N}.png     ← auto-generated CAM images
+│   └── gradcam/                  # Auto-generated Grad-CAM PNG images
+│       └── {request_id}_c{N}.png
 │
-├── weights/
-│   ├── best_stage3_f10.6032.pth
+├── weights/                      # Model checkpoints (place downloaded files here)
+│   ├── best_stage3_f10.6032.pth  # CNN DualBranch checkpoint
 │   └── lora_adapter_20260507_1431/
 │       ├── adapter_config.json
 │       ├── adapter_model.safetensors
 │       └── tokenizer.*
 │
-├── data/
-│   └── ICBHI_2017/
-│       ├── audio/
-│       └── labels/
+├── data/                         # Training data (optional, not shipped)
+│   ├── ICBHI_2017/
+│   │   ├── audio/
+│   │   └── labels/
+│   └── ...
 │
-├── training/
+├── training/                     # Training scripts (optional)
 │   ├── train_cnn.py
 │   ├── train_qlora.py
 │   └── evaluate.py
 │
-└── notebooks/
+└── notebooks/                    # Jupyter/Colab notebooks (optional)
     └── demo_inference.ipynb
 ```
 
 ---
 
-## ⚙️ Configuration Reference
+## 13. Configuration Reference
 
-All constants are defined at the top of `main_v5_2.py` and overridable via environment variables:
+All configuration constants are defined at the top of `main_v5_2.py` and can be overridden via environment variables:
 
 | Constant | Default | Env Variable | Description |
-|----------|---------|-------------|-------------|
+|---|---|---|---|
 | `PORT` | `8000` | `PORT` | FastAPI server port |
+| `CHECKPOINT_PATH` | *(Google Drive path)* | `CHECKPOINT_PATH` | CNN checkpoint `.pth` file |
+| `QLORA_ADAPTER_PATH` | *(Google Drive path)* | `QLORA_ADAPTER_PATH` | QLoRA adapter directory |
+| `NGROK_AUTH_TOKEN` | `""` | `NGROK_AUTH_TOKEN` | ngrok authentication token |
 | `TARGET_SR` | `16000` | — | Audio sample rate (Hz) |
-| `TARGET_LENGTH_SEC` | `6` | — | Window duration (s) |
+| `TARGET_LENGTH_SEC` | `6` | — | Window duration (seconds) |
 | `N_MELS` | `128` | — | Mel filterbank bins |
 | `HOP_LENGTH` | `512` | — | STFT hop length (samples) |
 | `N_FFT` | `1024` | — | STFT window size (samples) |
-| `FMIN` / `FMAX` | `50` / `4000` | — | Mel frequency bounds (Hz) |
-| `QLORA_MAX_SEQ_LEN` | `1024` | — | Max tokenized input length |
-| `QLORA_MAX_NEW_TOKENS` | `800` | — | Max new tokens per LLM call |
-| `TOP_CYCLES_FOR_DISEASE` | `3` | — | Cycles fed to QLoRA |
-| `TOP_K` | `5` | — | Soft retrieval neighbors |
-| `RETRIEVAL_GAP_AMBIGUOUS` | `0.05` | — | Ambiguity threshold |
+| `FMIN` | `50` | — | Mel filterbank minimum frequency |
+| `FMAX` | `4000` | — | Mel filterbank maximum frequency |
+| `QLORA_MAX_SEQ_LEN` | `1024` | — | Maximum tokenized input length |
+| `QLORA_MAX_NEW_TOKENS` | `800` | — | Maximum new tokens per LLM call |
+| `TOP_CYCLES_FOR_DISEASE` | `3` | — | Number of top cycles fed to QLoRA |
+| `TOP_K` | `5` | — | Number of soft retrieval neighbors |
+| `RETRIEVAL_GAP_AMBIGUOUS` | `0.05` | — | Threshold below which retrieval is flagged ambiguous |
 
 ---
 
-## 🏋️ Training Guide
+## 14. Training Guide
 
-### CNN — 3-Stage Progressive Unfreezing
+### 14.1 CNN Multi-Task Training
 
-```
-Stage 1  (5–10 epochs)   Freeze backbone → train heads only          lr = 1e-3
-Stage 2  (10–20 epochs)  Unfreeze branches + fusion + attention      lr = 1e-4
-Stage 3  (20–50 epochs)  Unfreeze all layers including SharedStem    lr = 5e-5
-                                                                  CosineAnnealingLR
-```
+The CNN is trained in 3 stages with progressive unfreezing:
 
-**Multi-task loss:**
-
+**Stage 1 — Head-only warm-up (5–10 epochs):**
+Freeze SharedStem + BranchUppers. Train only EventHead + DiseaseHead.
 ```python
-loss = 0.5 * CrossEntropyLoss(event_logits,   event_labels  ) \
+for name, param in model.named_parameters():
+    if "head" not in name:
+        param.requires_grad = False
+optimizer = torch.optim.AdamW(
+    filter(lambda p: p.requires_grad, model.parameters()),
+    lr=1e-3, weight_decay=1e-4
+)
+```
+
+**Stage 2 — Branch fine-tuning (10–20 epochs):**
+Unfreeze BranchUppers + CrossAttentionFusion + PatientAttention.
+```python
+for name, param in model.named_parameters():
+    if "shared" not in name:
+        param.requires_grad = True
+optimizer = torch.optim.AdamW(model.parameters(), lr=1e-4, weight_decay=1e-4)
+```
+
+**Stage 3 — Full fine-tuning (20–50 epochs):**
+Unfreeze all layers including SharedStem.
+```python
+for param in model.parameters():
+    param.requires_grad = True
+optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=1e-4)
+scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=30)
+```
+
+**Loss function:**
+Multi-task loss with balanced weighting:
+```python
+loss = 0.5 * CrossEntropyLoss(event_logits, event_labels) \
      + 0.5 * CrossEntropyLoss(disease_logits, disease_labels)
 ```
 
-### QLoRA Fine-Tuning
+### 14.2 QLoRA Fine-Tuning
 
 ```python
-from transformers import AutoModelForCausalLM, BitsAndBytesConfig
+from transformers import AutoTokenizer, AutoModelForCausalLM, BitsAndBytesConfig
 from peft import LoraConfig, get_peft_model, TaskType
 
+# 4-bit quantization configuration
 bnb_config = BitsAndBytesConfig(
     load_in_4bit=True,
     bnb_4bit_quant_type="nf4",
@@ -940,30 +1219,47 @@ bnb_config = BitsAndBytesConfig(
     bnb_4bit_use_double_quant=True,
 )
 
-lora_config = LoraConfig(
-    task_type=TaskType.CAUSAL_LM,
-    r=16, lora_alpha=32, lora_dropout=0.05,
-    target_modules=["q_proj","v_proj","k_proj","o_proj",
-                    "gate_proj","up_proj","down_proj"],
+# Load base model
+model = AutoModelForCausalLM.from_pretrained(
+    "Qwen/Qwen2.5-7B-Instruct",
+    quantization_config=bnb_config,
+    device_map="auto",
+    trust_remote_code=True,
 )
 
-# trainable params: 83,886,080 / 7,699,431,424  (1.09 %)
+# LoRA configuration
+lora_config = LoraConfig(
+    task_type=TaskType.CAUSAL_LM,
+    r=16,
+    lora_alpha=32,
+    lora_dropout=0.05,
+    target_modules=[
+        "q_proj", "v_proj", "k_proj", "o_proj",
+        "gate_proj", "up_proj", "down_proj"
+    ],
+    bias="none",
+)
+model = get_peft_model(model, lora_config)
+model.print_trainable_parameters()
+# trainable params: 83,886,080 || all params: 7,699,431,424 || trainable%: 1.09%
 ```
 
 **Training data format:**
-
-```jsonc
+Each training example is a JSON object:
+```json
 {
-  "instruction": "<alpaca system instruction>",
-  "input":       "<build_input_text_single_cycle() output>",
-  "output":      "**Step 1: ...\n\n**Step 2: ...\n\n...\n\n**Step 6: ...**"
+  "instruction": "<ALPACA_INSTRUCTION>",
+  "input": "<build_input_text_single_cycle() output>",
+  "output": "**Step 1: ...\n\n**Step 2: ...\n\n...\n\n**Step 6: ...**"
 }
 ```
 
-**Recommended training config:**
-
+**Training script skeleton:**
 ```python
-TrainingArguments(
+from transformers import TrainingArguments, Trainer, DataCollatorForSeq2Seq
+
+training_args = TrainingArguments(
+    output_dir="./qlora_output",
     num_train_epochs=3,
     per_device_train_batch_size=2,
     gradient_accumulation_steps=8,
@@ -971,233 +1267,271 @@ TrainingArguments(
     lr_scheduler_type="cosine",
     warmup_ratio=0.05,
     bf16=True,
+    logging_steps=10,
+    save_strategy="epoch",
+    evaluation_strategy="epoch",
+    report_to="none",
 )
+
+trainer = Trainer(
+    model=model,
+    args=training_args,
+    train_dataset=train_dataset,
+    eval_dataset=eval_dataset,
+    data_collator=DataCollatorForSeq2Seq(tokenizer, pad_to_multiple_of=8),
+)
+trainer.train()
+trainer.save_model("./qlora_output/lora_adapter_final")
 ```
 
-### Recommended Datasets
+### 14.3 Recommended Datasets
 
-| Dataset | Cycles / Recordings | Labels | Source |
-|---------|-------------------|--------|--------|
-| ICBHI 2017 | 6 898 cycles | Events + Diseases | [bhichallenge.med.auth.gr](https://bhichallenge.med.auth.gr/) |
-| SPRSound | 2 683 recordings | Events | [GitHub](https://github.com/SJTU-YONGFU-RESEARCH-GRP/SPRSound) |
-| HF Lung V1 | 9 765 recordings | Events | [HuggingFace](https://huggingface.co/datasets/hf-lung) |
+| Dataset | Samples | Events | Diseases | Source |
+|---|---|---|---|---|
+| ICBHI 2017 | 6,898 cycles | ✓ | ✓ | [ICBHI Challenge](https://bhichallenge.med.auth.gr/) |
+| SPRSound | 2,683 recordings | ✓ | — | [GitHub](https://github.com/SJTU-YONGFU-RESEARCH-GRP/SPRSound) |
+| HF Lung V1 | 9,765 recordings | ✓ | — | [HuggingFace](https://huggingface.co/datasets/hf-lung) |
 
 ---
 
-## 📊 Evaluation & Metrics
+## 15. Evaluation & Metrics
 
-### Benchmark Results — Stage 3 Checkpoint
+### 15.1 CNN Metrics
+
+For the multi-label scenario (4 event classes, 3 disease classes), the following metrics are used:
+
+| Metric | Formula | Notes |
+|---|---|---|
+| Macro F1 | (F1_class1 + ... + F1_classN) / N | Primary metric — treats all classes equally |
+| Weighted F1 | Σ(support_i × F1_i) / total | Better for imbalanced datasets |
+| Sensitivity (SE) | TP / (TP + FN) | Per-class recall |
+| Specificity (SP) | TN / (TN + FP) | Per-class specificity |
+| ICBHI Score | (SE + SP) / 2 | Standard ICBHI 2017 challenge metric |
+
+**Current benchmark (Stage 3 checkpoint):**
 
 | Task | Macro F1 | Weighted F1 | ICBHI Score |
-|------|----------|------------|------------|
-| Event (4 classes) | **0.603** | 0.641 | 0.588 |
-| Disease (3 classes) | **0.612** | 0.659 | — |
+|---|---|---|---|
+| Event (4 classes) | 0.603 | 0.641 | 0.588 |
+| Disease (3 classes) | 0.612 | 0.659 | — |
 
-### Metric Definitions
+### 15.2 QLoRA Evaluation
 
-| Metric | Formula | Use Case |
-|--------|---------|---------|
-| Macro F1 | `Σ F1_i / N` | Primary — treats all classes equally |
-| Weighted F1 | `Σ (support_i × F1_i) / total` | Imbalanced class distributions |
-| Sensitivity (SE) | `TP / (TP + FN)` | Per-class recall |
-| Specificity (SP) | `TN / (TN + FP)` | Per-class specificity |
-| ICBHI Score | `(SE + SP) / 2` | Standard challenge metric |
+QLoRA is evaluated on a held-out clinical reasoning test set:
 
-```bash
-# Evaluate CNN
+| Metric | Value | Description |
+|---|---|---|
+| Step extraction rate | % steps successfully parsed | Fraction of 6 steps extracted correctly |
+| Verdict accuracy | % dis_correct matches GT | When ground truth is available |
+| Parse OK rate | % responses with ≥1 step | Fraction of non-empty responses |
+
+### 15.3 Running Evaluation
+
+```python
+# Evaluate CNN on test set
 python training/evaluate.py \
   --checkpoint weights/best_stage3_f10.6032.pth \
-  --test_dir   data/ICBHI_2017/test
+  --test_dir data/ICBHI_2017/test \
+  --output_file eval_results.json
 
-# Evaluate QLoRA step parsing
+# Evaluate QLoRA step parsing on held-out examples
 python training/evaluate_qlora.py \
-  --adapter   weights/lora_adapter_20260507_1431 \
-  --test_file data/qlora_test.jsonl
+  --adapter weights/lora_adapter_20260507_1431 \
+  --test_file data/qlora_test.jsonl \
+  --output_file qlora_eval_results.json
 ```
 
 ---
 
-## 🚢 Deployment
+## 16. Deployment
 
-### Local
+### 16.1 Local Development
 
 ```bash
 python main_v5_2.py
 # → http://localhost:8000
 ```
 
-### Google Colab + ngrok
+### 16.2 Google Colab with ngrok
 
 ```python
 import os
-os.environ["NGROK_AUTH_TOKEN"]   = "your_token"
-os.environ["CHECKPOINT_PATH"]    = "/content/drive/MyDrive/best_stage3_f10.6032.pth"
-os.environ["QLORA_ADAPTER_PATH"] = "/content/drive/MyDrive/lora_adapter_20260507_1431"
+os.environ["NGROK_AUTH_TOKEN"] = "your_token_here"
+os.environ["CHECKPOINT_PATH"]   = "/content/drive/MyDrive/best_stage3_f10.6032.pth"
+os.environ["QLORA_ADAPTER_PATH"] = "/content/drive/MyDrive/lung/qlora_output/lora_adapter_20260507_1431"
 
 exec(open("main_v5_2.py").read())
-# Public URL printed after ~2 s
+# The ngrok public URL will be printed after ~2 seconds
 ```
 
-### Docker
+### 16.3 Docker
 
 ```dockerfile
 FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+
 WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
 COPY main_v5_2.py .
 COPY static/ ./static/
+
 ENV CHECKPOINT_PATH=/weights/best_stage3_f10.6032.pth
 ENV QLORA_ADAPTER_PATH=/weights/lora_adapter_20260507_1431
+
 EXPOSE 8000
 CMD ["python", "main_v5_2.py"]
 ```
 
 ```bash
 docker build -t pneumoai:v5.2 .
-docker run --gpus all -v /your/weights:/weights -p 8000:8000 pneumoai:v5.2
+docker run --gpus all \
+  -v /your/weights:/weights \
+  -p 8000:8000 \
+  pneumoai:v5.2
 ```
 
-### Memory Budget
+### 16.4 Memory Optimization Tips
 
-| Component | VRAM |
-|-----------|------|
-| QLoRA (4-bit, 7B) | ~6 GB |
-| CNN DualBranch | ~500 MB |
-| **Total** | **~6.5 GB** (16 GB GPU comfortable) |
-
-> Set `device_map="auto"` to enable CPU offloading on GPUs with less than 12 GB VRAM (increases latency).
+- **GPU memory:** QLoRA with 4-bit quantization requires ~6 GB VRAM for the 7B model. Combined with the CNN (~500 MB), a 16 GB GPU is sufficient.
+- **CPU offloading:** If VRAM is insufficient, set `device_map="auto"` in `get_qlora_model()` to allow CPU offloading (increases latency).
+- **Batch size:** Currently fixed at 1 (single audio file per request). For throughput optimization, implement async queuing.
+- **GradCAM memory:** Each GradCAM computation requires a backward pass. Process cycles sequentially if memory is tight.
 
 ---
 
-## 🛠 Troubleshooting
+## 17. Troubleshooting
 
-### `RuntimeError: CUDA out of memory`
-
-```bash
-# Reduce generation budget
-QLORA_MAX_SEQ_LEN=512
-QLORA_MAX_NEW_TOKENS=400
+### `CUDA out of memory` during QLoRA inference
 ```
-
-Or add before each QLoRA call:
-
+RuntimeError: CUDA out of memory.
+```
+**Fix:** Reduce `QLORA_MAX_SEQ_LEN` to 512 or `QLORA_MAX_NEW_TOKENS` to 400. Alternatively, set `torch.cuda.empty_cache()` before each QLoRA call:
 ```python
 torch.cuda.empty_cache()
+parsed = _call_qlora_single(input_text, pred_disease)
 ```
 
-### QLoRA returns `parse_ok: False`
-
-Inspect the raw output files generated in the working directory:
-
+### QLoRA returns empty steps
+```python
+{"parse_ok": False, "reasoning": [], ...}
 ```
-qlora_raw_output_cycle{N}.txt
+**Fix:** This usually means the LLM output format changed. Check `qlora_raw_output_*.txt` files generated in the working directory to see the raw LLM output. If the model uses a different step format, update the regex in `extract_steps_v2()`.
+
+### Checkpoint not found
 ```
+WARNING - Checkpoint not found — using random weights
+```
+**Fix:** Verify `CHECKPOINT_PATH` points to a valid `.pth` file. The `_resolve_checkpoint()` function also supports glob patterns (e.g., `./weights/best_stage3_*.pth`).
 
-If Qwen uses a different step format, update the regex in `extract_steps_v2()`.
-
-### `AudioFileError` on MP3
-
+### `librosa.load` fails on MP3
+```
+AudioFileError: Error loading ...
+```
+**Fix:** Install `ffmpeg` on your system:
 ```bash
-# Ubuntu / Debian
+# Ubuntu/Debian
 sudo apt-get install ffmpeg
 
 # macOS
 brew install ffmpeg
 
-# Google Colab
+# Colab
 !apt-get install -q ffmpeg
 ```
 
-### Checkpoint not found warning
-
-```
-WARNING - Checkpoint not found — using random weights
-```
-
-Verify the path or use the glob fallback in `_resolve_checkpoint()`:
-
-```python
-CHECKPOINT_PATH = "./weights/best_stage3_*.pth"
-```
-
-### ngrok tunnel fails
-
+### ngrok tunnel not starting
+**Fix:** Ensure your ngrok auth token is valid. Free ngrok accounts allow only one concurrent tunnel — kill any existing tunnels first:
 ```python
 from pyngrok import ngrok
-ngrok.kill()  # kill existing tunnels (free accounts: 1 concurrent)
+ngrok.kill()
 ```
 
 ---
 
-## 📅 Changelog
+## 18. Changelog
 
-### `v5.2.0` — 2026-05-07
+### v5.2.0 (2026-05-07)
+- **[SEQ-1]** `call_local_llm_sequential_cycles`: replaced single combined QLoRA call with 3 independent sequential calls, one per top cycle
+- **[SEQ-2]** `build_input_text_single_cycle`: new function generating per-cycle input text (shorter, cycle-specific)
+- **[SEQ-3]** `_call_qlora_single`: new function wrapping a single QLoRA call with clear output printing and file saving
+- **[SEQ-4]** `aggregate_cycle_qlora_results`: majority vote aggregation of 3 independent per-cycle results
+- **[UI]** `qlora_per_cycle` in API response: array of 3 individual cycle results for tab-based UI rendering
+- **[UI]** Per-cycle tab navigation in QLoRA panel — each cycle has its own 6-step accordion
 
-| Type | Change |
-|------|--------|
-| `NEW` | `call_local_llm_sequential_cycles` — 3 independent sequential QLoRA calls replacing single combined call |
-| `NEW` | `build_input_text_single_cycle` — per-cycle input text generation |
-| `NEW` | `_call_qlora_single` — single QLoRA call wrapper with output logging |
-| `NEW` | `aggregate_cycle_qlora_results` — majority vote over 3 independent results |
-| `UI`  | `qlora_per_cycle` in API response — array of individual cycle results |
-| `UI`  | Per-cycle tab navigation in QLoRA panel — 6-step accordion per cycle |
+### v5.1.0
+- Fixed device placement bug (tensors moved to correct device before LLM call)
+- Removed SYSTEM_PROMPT — instruction embedded in Alpaca `### Instruction:` block
+- `parse_qlora_output_v2`: improved `dis_correct` extraction logic
 
-### `v5.1.0`
-
-| Type | Change |
-|------|--------|
-| `FIX` | Device placement bug — tensors moved to correct device before LLM call |
-| `FIX` | Removed SYSTEM_PROMPT — instruction embedded in Alpaca `### Instruction:` block |
-| `NEW` | `parse_qlora_output_v2` — improved `dis_correct` extraction logic |
-
-### `v5.0.0`
-
-| Type | Change |
-|------|--------|
-| `NEW` | Initial dual-branch architecture with CrossAttentionFusion |
-| `NEW` | First QLoRA integration (single combined call) |
-| `NEW` | Three.js 3D lung visualization in frontend |
+### v5.0.0
+- Initial dual-branch architecture with CrossAttentionFusion
+- First QLoRA integration (single combined call)
+- Three.js 3D lung visualization in frontend
 
 ---
 
-## 📖 Citation
+## 19. Citation
+
+If you use PneumoAI in your research, please cite:
 
 ```bibtex
 @software{pneumoai2026,
-  author  = {YOUR NAME},
-  title   = {PneumoAI: Dual-Branch Multi-Task CNN with QLoRA Sequential
-             Per-Cycle Analysis for Lung Sound Diagnostics},
-  version = {5.2.0},
-  year    = {2026},
-  url     = {https://github.com/YOUR_USERNAME/pneumoai},
-  note    = {DualBranch ResNet18 + FPN + CrossAttentionFusion +
-             PatientAttention, QLoRA fine-tuned Qwen2.5-7B-Instruct}
+  author    = {YOUR NAME},
+  title     = {PneumoAI: Dual-Branch Multi-Task CNN with QLoRA Sequential
+               Per-Cycle Analysis for Lung Sound Diagnostics},
+  version   = {5.2.0},
+  year      = {2026},
+  url       = {https://github.com/YOUR_USERNAME/pneumoai},
+  note      = {DualBranch ResNet18 + FPN + CrossAttentionFusion + PatientAttention,
+               QLoRA fine-tuned Qwen2.5-7B-Instruct}
 }
 ```
 
-**Builds upon:**
+**Related works this system builds upon:**
 
-- Rocha et al. (2019). *A Respiratory Sound Database for Automated Classification Systems.* ICBHI 2017.
-- Hu et al. (2022). *LoRA: Low-Rank Adaptation of Large Language Models.* ICLR.
-- Dettmers et al. (2023). *QLoRA: Efficient Finetuning of Quantized LLMs.* NeurIPS.
+- Rocha, B. M. et al. (2019). *A Respiratory Sound Database for the Development of Automated Classification Systems.* ICBHI 2017 Challenge.
+- Hu, E. J. et al. (2022). *LoRA: Low-Rank Adaptation of Large Language Models.* ICLR 2022.
+- Dettmers, T. et al. (2023). *QLoRA: Efficient Finetuning of Quantized LLMs.* NeurIPS 2023.
 - Qwen Team. (2024). *Qwen2.5 Technical Report.* Alibaba Group.
-- Lin et al. (2017). *Feature Pyramid Networks for Object Detection.* CVPR.
+- Lin, T. Y. et al. (2017). *Feature Pyramid Networks for Object Detection.* CVPR 2017.
 
 ---
 
-## 📄 License
+## 20. License
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for full terms.
+```
+MIT License
+
+Copyright (c) 2026 YOUR NAME
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ---
 
-> **⚕ Medical Disclaimer** — PneumoAI is a research and clinical decision-support tool. It is **not** a certified medical device and must **not** be used as the sole basis for clinical diagnosis or treatment. All outputs require review by a qualified healthcare professional.
+> **⚠️ Medical Disclaimer:** PneumoAI is a research and decision-support tool intended to assist clinicians. It is **not** a certified medical device and must **not** be used as the sole basis for clinical diagnosis or treatment decisions. All outputs require review and interpretation by a qualified healthcare professional.
 
 ---
 
 <div align="center">
 
-*Built for respiratory health · PneumoAI v5.2.0*
+Built with ❤️ for respiratory health · PneumoAI v5.2.0
 
 </div>
