@@ -86,80 +86,94 @@ PneumoAI is an end-to-end clinical decision-support system that analyzes digital
 ```mermaid
 flowchart TB
 
-%% =========================
+%% =====================================================
 %% INPUT PIPELINE
-%% =========================
+%% =====================================================
 
-A[🎵 Audio Input<br/>.wav · .mp3 · .flac · .ogg · .m4a · .webm]
+A[🎵 Audio Input<br/>wav · mp3 · flac · ogg · m4a · webm]
 
 A --> B
 
-B[🧹 Audio Pipeline<br/><br/>
-• Butterworth Bandpass Filter<br/>
-• 100–2000 Hz<br/>
-• Z-score Normalization<br/>
-• Sliding Window Segmentation<br/>
-• 6s window / 3s hop]
+B[🧹 Audio Preprocessing<br/><br/>
+Butterworth Bandpass Filter<br/>
+100–2000 Hz<br/><br/>
+Z-score Normalization<br/><br/>
+Sliding Window Segmentation<br/>
+6s Window / 3s Hop]
 
 B --> C
 
 C[📊 Log-Mel Spectrogram<br/>N × 1 × 128 × 188]
 
-%% =========================
-%% MAIN MODEL
-%% =========================
+%% =====================================================
+%% MODEL
+%% =====================================================
 
 C --> D
 
 subgraph MODEL["🧠 DualBranchModel (CNN)"]
 
-D[SharedStem<br/>ResNet18 conv1 → layer2]
+direction TB
+
+D[SharedStem<br/><br/>
+ResNet18<br/>
+conv1 → layer2]
 
 D --> E1
 D --> E2
 
+subgraph BRANCHES["Feature Extraction Branches"]
+direction LR
+
 E1[🫁 EventBranch<br/><br/>
-layer3 + layer4 + FPN]
+layer3 + layer4<br/>
+Feature Pyramid Network]
 
 E2[🩺 DiseaseBranch<br/><br/>
-layer3 + layer4 + FPN]
+layer3 + layer4<br/>
+Feature Pyramid Network]
+
+end
 
 E1 --> F
 E2 --> F
 
 F[🔀 CrossAttentionFusion<br/><br/>
-Bidirectional MHA<br/>4 Heads]
+Bidirectional Multi-Head Attention<br/>
+4 Attention Heads]
 
 F --> G1
 F --> G2
 
 G1[📍 EventHead<br/><br/>
-LayerNorm + MLP<br/>→ 4 Event Labels]
+LayerNorm + MLP<br/>
+4 Event Labels]
 
 G2[🧬 PatientAttention<br/><br/>
-Aggregate All Cycles]
+Respiratory Cycle Aggregation]
 
 G2 --> H
 
 H[🏥 DiseaseHead<br/><br/>
-LayerNorm + MLP<br/>→ 3 Disease Labels]
+LayerNorm + MLP<br/>
+3 Disease Labels]
 
 end
 
-%% =========================
-%% PREDICTIONS
-%% =========================
+%% =====================================================
+%% PREDICTION
+%% =====================================================
 
 G1 --> I
 H --> J
 
-I[📈 Event Probabilities<br/>Per Cycle]
+I[📈 Event Probabilities<br/>Per Respiratory Cycle]
 
-J[📈 Disease Probabilities<br/>Patient-Level]
+J[📈 Disease Probabilities<br/>Patient-Level Prediction]
 
-%% =========================
+%% =====================================================
 %% XAI
-%% =========================
+%% =====================================================
 
 I --> K
 J --> K
@@ -170,16 +184,16 @@ cam_disease_pred<br/>
 cam_disease_alt<br/>
 cam_diff]
 
-%% =========================
-%% TOP-K SELECTOR
-%% =========================
+%% =====================================================
+%% TOP-K SELECTION
+%% =====================================================
 
 K --> L
 
 L[🎯 Top-3 Cycle Selector<br/><br/>
-Priority:<br/>
+Priority Strategy:<br/>
 • Abnormal Events<br/>
-• Highest CAM Peak]
+• Highest Disease CAM Peak]
 
 L --> M1
 L --> M2
@@ -189,9 +203,9 @@ M1[Cycle #1]
 M2[Cycle #2]
 M3[Cycle #3]
 
-%% =========================
+%% =====================================================
 %% QLORA
-%% =========================
+%% =====================================================
 
 M1 --> N
 M2 --> N
@@ -208,17 +222,17 @@ O[🧾 6-Step Diagnostic Analysis<br/><br/>
 2. Disease Reliability<br/>
 3. Retrieval Evaluation<br/>
 4. Prototype Similarity<br/>
-5. Conflict Detection<br/>
-6. Final Conclusion]
+5. Conflict Identification<br/>
+6. Final Diagnostic Conclusion]
 
-%% =========================
-%% FINAL AGGREGATION
-%% =========================
+%% =====================================================
+%% FINAL OUTPUT
+%% =====================================================
 
 O --> P
 
 P[🗳 Majority Vote Aggregation<br/><br/>
-3 Cycles → 1 Final Decision]
+3 Cycles → 1 Final Prediction]
 
 P --> Q
 
@@ -226,44 +240,34 @@ Q[🌐 JSON Response<br/>FastAPI Backend]
 
 Q --> R
 
-R[🖥 React + Three.js Frontend<br/><br/>
-Interactive 3D Lung Visualization]
+R[🖥 Interactive Frontend<br/><br/>
+React + Three.js<br/>
+3D Lung Visualization]
 
-%% =========================
-%% COLORS
-%% =========================
+%% =====================================================
+%% STYLING
+%% =====================================================
 
-style A fill:#111827,color:#fff,stroke:#000
-style B fill:#0f766e,color:#fff,stroke:#134e4a
-style C fill:#0369a1,color:#fff,stroke:#0c4a6e
+classDef input fill:#0f172a,color:#ffffff,stroke:#1e293b,stroke-width:2px;
+classDef preprocess fill:#115e59,color:#ffffff,stroke:#134e4a,stroke-width:2px;
+classDef feature fill:#1d4ed8,color:#ffffff,stroke:#1e3a8a,stroke-width:2px;
+classDef attention fill:#7c3aed,color:#ffffff,stroke:#581c87,stroke-width:2px;
+classDef head fill:#ea580c,color:#ffffff,stroke:#7c2d12,stroke-width:2px;
+classDef output fill:#15803d,color:#ffffff,stroke:#14532d,stroke-width:2px;
+classDef explain fill:#be123c,color:#ffffff,stroke:#881337,stroke-width:2px;
+classDef llm fill:#111827,color:#ffffff,stroke:#000000,stroke-width:2px;
+classDef neutral fill:#475569,color:#ffffff,stroke:#334155,stroke-width:2px;
 
-style D fill:#7c3aed,color:#fff,stroke:#581c87
-
-style E1 fill:#dc2626,color:#fff,stroke:#7f1d1d
-style E2 fill:#2563eb,color:#fff,stroke:#1e3a8a
-
-style F fill:#9333ea,color:#fff,stroke:#581c87
-
-style G1 fill:#ea580c,color:#fff,stroke:#7c2d12
-style G2 fill:#0891b2,color:#fff,stroke:#164e63
-style H fill:#16a34a,color:#fff,stroke:#14532d
-
-style I fill:#374151,color:#fff
-style J fill:#374151,color:#fff
-
-style K fill:#be123c,color:#fff,stroke:#881337
-style L fill:#ca8a04,color:#fff,stroke:#713f12
-
-style M1 fill:#475569,color:#fff
-style M2 fill:#475569,color:#fff
-style M3 fill:#475569,color:#fff
-
-style N fill:#111827,color:#fff,stroke:#000
-style O fill:#374151,color:#fff
-
-style P fill:#15803d,color:#fff,stroke:#14532d
-style Q fill:#0f766e,color:#fff,stroke:#134e4a
-style R fill:#1d4ed8,color:#fff,stroke:#1e3a8a
+class A input;
+class B preprocess;
+class C feature;
+class D,E1,E2 feature;
+class F,G2 attention;
+class G1,H head;
+class I,J,P,Q,R output;
+class K,L explain;
+class M1,M2,M3 neutral;
+class N,O llm;
 ```
 
 ---
