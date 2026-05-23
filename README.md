@@ -492,9 +492,8 @@ For each CAM map, 10 scalar features are extracted to feed into the LLM:
 
 | Checkpoint | Stage | Val F1 | Size | Download |
 |---|---|---|---|---|
-| `best_stage3_f10.6032.pth` | Stage 3 (full fine-tune) | 0.6032 | ~75 MB | [📥 Google Drive](#) · [📥 HuggingFace](#) |
-| `best_stage2_f10.5891.pth` | Stage 2 (branch heads) | 0.5891 | ~75 MB | [📥 Google Drive](#) · [📥 HuggingFace](#) |
-| `best_stage1_f10.5412.pth` | Stage 1 (heads only) | 0.5412 | ~75 MB | [📥 Google Drive](#) · [📥 HuggingFace](#) |
+| `multi_task.pth` | Stage 3 (full fine-tune) | 0.6032 | ~75 MB | [📥 Hugging Face](https://huggingface.co/leminhhung0101/lung/blob/main/multi_task.pth) |
+
 
 **To download and place:**
 ```bash
@@ -514,7 +513,7 @@ wget -O /content/drive/MyDrive/best_stage3_f10.6032.pth \
 
 | Adapter | Base Model | Training Epochs | Download |
 |---|---|---|---|
-| `lora_adapter_20260507_1431` | Qwen2.5-7B-Instruct | 3 | [📥 Google Drive](#) · [📥 HuggingFace](#) |
+| `Qlora` | Qwen2.5-7B-Instruct | 3 | [📥 HuggingFace](https://huggingface.co/leminhhung0101/lung/blob/main/qlora.zip) |
 
 The adapter directory contains:
 ```
@@ -544,14 +543,14 @@ unzip /tmp/lora_adapter.zip \
 
 Update via environment variables (recommended for deployment):
 ```bash
-export CHECKPOINT_PATH="/your/path/to/best_stage3_f10.6032.pth"
-export QLORA_ADAPTER_PATH="/your/path/to/lora_adapter_20260507_1431"
+export CHECKPOINT_PATH="/your/path/to/multi_task.pt"
+export QLORA_ADAPTER_PATH="/your/path/to/Qlora"
 ```
 
 Or edit directly in `main_v5_2.py`:
 ```python
-CHECKPOINT_PATH    = "/your/path/to/best_stage3_f10.6032.pth"
-QLORA_ADAPTER_PATH = "/your/path/to/lora_adapter_20260507_1431"
+CHECKPOINT_PATH    = "/your/path/to/multi_task.pt"
+QLORA_ADAPTER_PATH = "/your/path/to/Qlora"
 ```
 
 ---
